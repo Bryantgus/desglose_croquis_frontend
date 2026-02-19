@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/Header-Sidebar/Sidebar";
+import Header from "../components/Header-Sidebar/Header";
 
 export default function MainLayout() {
   return (
@@ -9,7 +10,11 @@ export default function MainLayout() {
         <Sidebar />
       </div>
 
-      <main className="flex-1 overflow-x-hidden">
+      <main className="min-h-screen w-full bg-slate-900 p-10
+    bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] 
+    bg-size-[100px_100px]">
+
+        <Header />
         <Outlet />
       </main>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Item from "./Header-Sidebar/Item";
-import Ventanasvg from "../assets/Ventanasvg";
+import Ventanasvg from "../../assets/Ventanasvg";
 import { useNavigate } from 'react-router-dom';
+import Item from "./Item";
 export default function Sidebar() {
 
   const [moduleSelected, setModuleSelected] = useState('Ordenes')
