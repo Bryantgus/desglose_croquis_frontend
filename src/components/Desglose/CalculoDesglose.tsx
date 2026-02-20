@@ -14,7 +14,7 @@ export default function CalculoDesglose() {
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex justify-between items-center py-0.5 px-1 border-b border-slate-700/30 last:border-0"
+          className="flex justify-between items-center py-0.5 px-1 border-b gap-3 border-slate-700/30 last:border-0"
         >
           <div className="w-16 h-6 flex items-center justify-center bg-slate-800 rounded border border-slate-600">
             <span className="text-[13px] font-bold text-slate-300 uppercase tracking-wide">
@@ -22,7 +22,6 @@ export default function CalculoDesglose() {
             </span>
           </div>
 
-          {/* Value - más compacto */}
           <div className="w-16 h-6 flex items-center justify-center bg-blue-500/10 rounded border border-blue-500/30">
             <span className="text-[18px] text-blue-400">
               {item.value}

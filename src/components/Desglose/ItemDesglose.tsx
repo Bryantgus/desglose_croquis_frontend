@@ -17,7 +17,7 @@ export default function ItemDesglose() {
     }
   }
   return (
-    <div className="glass-panel p-2 rounded-xl bg-slate-800/70 
+    <div className="glass-panel p-2 rounded-xl bg-slate-800/70 w-50
       border border-slate-700/50 
       transition-all duration-300 ease 
       hover:-translate-y-0.5 
@@ -33,8 +33,8 @@ export default function ItemDesglose() {
           <input
           name='etiqueta'
             type="text"
-            className="text-center w-24 bg-slate-800 text-white text-sm font-medium rounded  
-                border border-slate-600 focus:border-blue-500 focus:outline-none"
+            className="text-center w-20 bg-slate-800 text-white text-sm font-medium rounded  
+                border border-slate-600 focus:border-blue-500 focus:outline-none" 
           />
         </div>
 
