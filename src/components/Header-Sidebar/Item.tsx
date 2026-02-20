@@ -22,7 +22,7 @@ export default function Item({ title, description, icon, setActive, isActive }: 
   const IconComponent = ICON_MAP[icon];
 
   return (
-    <button onClick={() => setActive(title)}
+    <button onClick={() => setActive(title.toLowerCase())}
       className={`${isActive && 'active'} cursor-pointer w-full flex items-center gap-3 px-1 py-3 rounded-xl text-left transition-all group 
         ${isActive ? 'bg-[#3b82f626] text-[#60a5fa]' : 'hover:bg-slate-800/50'}`}
     >

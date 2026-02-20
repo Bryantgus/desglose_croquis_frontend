@@ -12,7 +12,7 @@ export default function MainLayout() {
 
       <main className="min-h-screen w-full bg-slate-900 p-10
     bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] 
-    bg-size-[100px_100px]">
+    bg-size-[50px_50px]">
 
         <Header />
         <Outlet />

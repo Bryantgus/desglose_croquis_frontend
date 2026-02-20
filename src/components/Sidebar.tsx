@@ -1,15 +1,21 @@
 import { useState } from "react";
 import Item from "./Header-Sidebar/Item";
 import Ventanasvg from "../assets/Ventanasvg";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 export default function Sidebar() {
-
-  const [moduleSelected, setModuleSelected] = useState('Ordenes')
-   const navigate = useNavigate()
+  const location = useLocation();
+  const route = location.pathname.split('/')[1]
+  const navigate = useNavigate()
+  const [moduleSelected, setModuleSelected] = useState(route)
+  
+  console.log(location);
+  
 
   const setActive = (module: string) => {
     setModuleSelected(module)
     navigate('/' + module.toLocaleLowerCase())
+    console.log("mmg");
+    
   }
 
   return (

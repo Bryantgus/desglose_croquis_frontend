@@ -1,11 +1,24 @@
 import { useState } from "react";
 import Ventanasvg from "../../assets/Ventanasvg";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Item from "./Item";
-export default function Sidebar() {
 
-  const [moduleSelected, setModuleSelected] = useState('Ordenes')
-   const navigate = useNavigate()
+interface ItemInfo {
+  title: string;
+  description: string;
+}
+
+const ITEM_INFO: ItemInfo[] = [
+  { title: 'Ordenes', description: "Gestión de trabajos" },
+  { title: 'Desglose', description: "Calculos de Perfiles y Cristales" },
+  { title: 'Croquis', description: "Empaquetado eficiente de cristales" },
+]
+
+export default function Sidebar() {
+  const location = useLocation();
+  const route = location.pathname.split('/')[1]
+  const [moduleSelected, setModuleSelected] = useState(route)
+  const navigate = useNavigate()
 
   const setActive = (module: string) => {
     setModuleSelected(module)
@@ -29,10 +42,17 @@ export default function Sidebar() {
       <nav className="flex-1 p-4 space-y-2">
         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Módulos</p>
 
-        <Item title={"Ordenes"} description={"Gestión de trabajos"} icon={"ordenes"} isActive={moduleSelected === 'Ordenes'} setActive={setActive} />
-        <Item title={"Desglose"} description={"Calculos de Perfiles y Cristales"} icon={"desglose"} isActive={moduleSelected === 'Desglose'} setActive={setActive} />
-        <Item title={"Croquis"} description={"Empaquetado eficiente de cristales"} icon={"croquis"} isActive={moduleSelected === 'Croquis'} setActive={setActive} />
-
+        {ITEM_INFO.map((it: ItemInfo, index: number) => {
+          return (
+            <Item 
+            key={index}
+            title={it.title} 
+            description={it.description} 
+            icon={it.title.toLowerCase() as "ordenes" | "desglose" | "croquis"} 
+            isActive={moduleSelected === it.title.toLowerCase()} 
+            setActive={setActive} />
+          )
+        })}
       </nav>
 
       <div className="p-4 border-t border-slate-700/50">
