@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // Tipos
-type OrderStatus = 'pendiente' | 'proceso' | 'completada' | 'urgente';
+type OrderStatus = 'pendiente' | 'proceso' | 'completada';
 
 interface OrderData {
   id?: string;
@@ -22,14 +22,12 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
   pendiente: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   proceso: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   completada: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  urgente: 'bg-red-500/20 text-red-400 border-red-500/30'
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pendiente: 'Pendiente',
   proceso: 'En Proceso',
   completada: 'Completada',
-  urgente: 'Urgente'
 };
 
 export default function CrearEditarOrden({
@@ -73,7 +71,10 @@ export default function CrearEditarOrden({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+      style={{
+        animation: 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+      }}>
 
       <div className="w-full max-w-2xl glass-panel rounded-2xl bg-slate-800/70 
         border border-slate-700/50 shadow-2xl overflow-hidden">
@@ -140,23 +141,25 @@ export default function CrearEditarOrden({
           <div className="grid grid-cols-2 gap-4">
 
             {/* Estado */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-                Estado
-              </label>
-              <select
-                value={formData.estado}
-                onChange={(e) => updateField('estado', e.target.value as OrderStatus)}
-                className="w-full h-10 bg-slate-900/50 rounded-lg px-3 text-white text-sm
-                  border border-slate-600
-                  focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
-                  transition-all appearance-none cursor-pointer"
-              >
-                {Object.entries(STATUS_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
-                ))}
-              </select>
-            </div>
+            {mode === 'editar' &&
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                  Estado
+                </label>
+                <select
+                  value={formData.estado}
+                  onChange={(e) => updateField('estado', e.target.value as OrderStatus)}
+                  className="w-full h-10 bg-slate-900/50 rounded-lg px-3 text-white text-sm
+                border border-slate-600
+                focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
+                transition-all appearance-none cursor-pointer"
+                >
+                  {Object.entries(STATUS_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+              </div>
+            }
 
             {/* Asignado a */}
             <div className="space-y-1">
@@ -178,27 +181,42 @@ export default function CrearEditarOrden({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300
-                hover:bg-slate-700/50 transition-colors cursor-pointer"
-            >
-              Cancelar
-            </button>
+          <div className={`flex ${mode === 'crear' ? 'justify-end' : "justify-between"} gap-3 pt-4 border-t border-slate-700/50`}>
+            {mode === 'editar' &&
+              <div>
+                <button
+                  type="submit"
+                  className="px-6 py-2 rounded-lg text-sm font-medium text-white
+              bg-[#1a284d] hover:bg-[#0f172b] 
+              shadow-lg shadow-[#0f172b]
+              transition-all hover:-translate-y-0.5 cursor-pointer"
+                >
+                  Eliminar Orden
+                </button>
+              </div>
+            }
 
-            <button
-              type="submit"
-              className="px-6 py-2 rounded-lg text-sm font-medium text-white
-                bg-[#1a284d] hover:bg-[#0f172b] 
-                shadow-lg shadow-[#0f172b]
-                transition-all hover:-translate-y-0.5 cursor-pointer"
-            >
-              {mode === 'crear' ? 'Crear Orden' : 'Guardar Cambios'}
-            </button>
+            <div>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300
+              hover:bg-slate-700/50 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                className="px-6 py-2 rounded-lg text-sm font-medium text-white
+              bg-[#1a284d] hover:bg-[#0f172b] 
+              shadow-lg shadow-[#0f172b]
+              transition-all hover:-translate-y-0.5 cursor-pointer"
+              >
+                {mode === 'crear' ? 'Crear Orden' : 'Guardar Cambios'}
+              </button>
+            </div>
           </div>
-
         </form>
       </div>
     </div>

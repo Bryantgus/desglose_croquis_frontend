@@ -1,12 +1,9 @@
-interface OrdenItemProps {
-  id: number;
-  cliente: string;
-  fecha: string;
-  estado: string;
-  action: (action: string) => void;
-}
+import Croquissvg from "../../assets/Croquissvg";
+import Desglosesvg from "../../assets/Desglosesvg";
+import Editsvg from "../../assets/Editsvg";
+import type { ItemOrden } from "../../types/Orden";
 
-export default function OrdenItem({ id, cliente, fecha, estado, action }: OrdenItemProps) {
+export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOrden) {
   const getStatusColor = (estado: string) => {
     switch (estado) {
       case 'Completado': return 'bg-emerald-500/20 text-emerald-400';
@@ -27,14 +24,17 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: OrdenI
         </span>
       </div>
       <div>
-        <button 
-          onClick={() => action(`edit-${id}`)}
-          className="text-slate-400 hover:text-white transition-colors"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+           <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('editar')}>
+            <Editsvg />
+          </button>
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')}>
+            <Desglosesvg />
+          </button>
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')}>
+            <Croquissvg />
+          </button>
+        </div>
       </div>
     </div>
   );

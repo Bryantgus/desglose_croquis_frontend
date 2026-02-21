@@ -1,17 +1,22 @@
 import OrdenItem from "./OrdenItem";
-import { mockOrdenes } from "../../utils/mockData";
+// import { mockOrdenes } from "../../utils/mockData";
+import type { Orden } from "../../types/Orden";
+import { useOrdenes } from "../../hooks/useOrdenes";
+import { useNavigate } from "react-router-dom";
 
-export type mockOrdenesType = {
-  id: number
-  cliente: string
-  fecha: string
-  estado: string
+type Props = {
+  toggleMode: (mode: 'editar') => void
 }
+export default function OrdenTable({ toggleMode }: Props) {
 
-export default function OrdenTable() {
-
+  const navigate = useNavigate()
+  const { data: ordenes } = useOrdenes()
   const doAction = (action: string) => {
-    console.log(action);
+    if (action === 'editar') {
+      toggleMode(action)
+    } else {
+      navigate('/' + action)
+    }
   }
 
   return (
@@ -29,7 +34,7 @@ export default function OrdenTable() {
 
       {/* Body scrollable - SIN tbody, solo div */}
       <div className="overflow-y-auto sl:h-145 h-68 rounded-b-xl divide-y divide-slate-700/50 bg-[#192436]">
-        {mockOrdenes.map((it: mockOrdenesType) => (
+        {ordenes?.map((it: Orden) => (
           <OrdenItem
             key={it.id}
             id={it.id}
