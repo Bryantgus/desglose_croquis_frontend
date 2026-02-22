@@ -2,6 +2,9 @@ import { useState } from "react";
 import Ventanasvg from "../../assets/Ventanasvg";
 import { useLocation, useNavigate } from 'react-router-dom';
 import Item from "./Item";
+import { checkServerActive } from "../../services/checkServerActiveService";
+import SpinLoading from "../SpinLoading";
+import { useQuery } from '@tanstack/react-query';
 
 interface ItemInfo {
   title: string;
@@ -15,6 +18,11 @@ const ITEM_INFO: ItemInfo[] = [
 ]
 
 export default function Sidebar() {
+  const { isLoading, isError, error } = useQuery({
+    queryKey: ['serverStatus'],
+    queryFn: checkServerActive.serverActive
+  });
+
   const location = useLocation();
   const route = location.pathname.split('/')[1]
   const [moduleSelected, setModuleSelected] = useState(route)
@@ -44,25 +52,34 @@ export default function Sidebar() {
 
         {ITEM_INFO.map((it: ItemInfo, index: number) => {
           return (
-            <Item 
-            key={index}
-            title={it.title} 
-            description={it.description} 
-            icon={it.title.toLowerCase() as "ordenes" | "desglose" | "croquis"} 
-            isActive={moduleSelected === it.title.toLowerCase()} 
-            setActive={setActive} />
+            <Item
+              key={index}
+              title={it.title}
+              description={it.description}
+              icon={it.title.toLowerCase() as "ordenes" | "desglose" | "croquis"}
+              isActive={moduleSelected === it.title.toLowerCase()}
+              setActive={setActive} />
           )
         })}
       </nav>
 
       <div className="p-4 border-t border-slate-700/50">
         <div className="glass-panel rounded-xl p-4 bg-linear-to-br from-slate-800/50 to-slate-900/50">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 status-pulse"></div>
-            <span className="text-xs font-medium text-emerald-400">Servidor en linea</span>
+          <div className="flex items-center gap-3 mb-3 justify-center">
+            {isLoading ?
+              <SpinLoading />
+              :
+              isError ?
+                <p className="text-red-500 text-sm">Error: {(error as Error).message}</p> :
+                <>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 status-pulse"></div>
+                  <span className="text-xs font-medium text-emerald-400">Servidor en linea</span>
+                </>
+            }
           </div>
         </div>
       </div>
     </aside>
   )
 }
+
