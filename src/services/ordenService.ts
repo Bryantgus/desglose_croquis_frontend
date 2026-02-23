@@ -12,9 +12,13 @@ export const ordenService = {
     return data
   },
 
-  modify: async ({ id, orden }: { id: number, orden: Partial<Orden>}): Promise<Orden> => {
+  modify: async ({ id, orden }: { id: number, orden: Partial<Orden> }): Promise<Orden> => {
     const { data } = await api.patch(`/orden/${id}`, orden)
     return data
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/orden/${id}`);
   }
 
 }

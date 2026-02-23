@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useIdStore } from '../../globalState/id';
-import { useCreateOrden, useModifyOrden, useOrdenes } from '../../hooks/useOrdenes';
+import { useCreateOrden, useDeleteOrden, useModifyOrden, useOrdenes } from '../../hooks/useOrdenes';
 import { useToastStore } from '../../globalState/toast';
 import SpinLoading from '../SpinLoading';
 import type { Orden, OrderStatus } from '../../types/Orden';
+import { useNavigate } from 'react-router-dom';
 
 
 interface CrearEditarOrdenProps {
@@ -24,11 +25,13 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
 };
 
 export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenProps) {
+  const navigate = useNavigate()
   const id = useIdStore(s => s.id);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { mutate: createOrden, isPending } = useCreateOrden();
-  const { mutate: modificarOrden, isPending: isPending1 } = useModifyOrden()
-  
+  const { mutate: modificarOrden, isPending: isPending1 } = useModifyOrden();
+  const { mutate: deleteOrden, isPending: isPending2 } = useDeleteOrden();
+  const setId = useIdStore(s => s.setId)
   const openToast = useToastStore(s => s.openToast)
   const [errors, setErrors] = useState<Partial<Record<keyof Orden, string>>>({});
 
@@ -67,6 +70,8 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
           onSuccess: () => {
             openToast('Orden Guardada Correctamente', 'success');
             onCancel();
+            setId(Number(id))
+            navigate('/desglose')
           },
           onError: () => {
             onCancel()
@@ -74,7 +79,7 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
           }
         });
       } else {
-        modificarOrden({id: id!, orden: formData}, {
+        modificarOrden({ id: id!, orden: formData }, {
           onSuccess: () => {
             onCancel();
             openToast('Orden Modificada Correctamente', 'success');
@@ -100,10 +105,15 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
   };
 
   const handleConfirmDelete = () => {
-    if (id) {
-      //delete
-    }
-    onCancel()
+    console.log(id);
+    
+    if (!id) return;
+    deleteOrden(id, {
+      onSuccess: () => {
+        onCancel();
+        openToast('Orden eliminada', 'success');
+      }
+    });
   };
 
   if (!data) return;
@@ -247,15 +257,18 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
                       ¿Está seguro de eliminar la orden?
                     </span>
 
-                    <button
-                      type="button"
-                      onClick={handleConfirmDelete}
-                      className="px-3 py-1 rounded text-xs font-medium text-white
+                    {isPending2 ?
+                      <SpinLoading />
+                      :
+                      <button
+                        type="button"
+                        onClick={handleConfirmDelete}
+                        className="px-3 py-1 rounded text-xs font-medium text-white
                         bg-red-600 hover:bg-red-500 
                         transition-colors cursor-pointer"
-                    >
-                      Sí
-                    </button>
+                      >
+                        Sí
+                      </button>}
                   </div>
                 )}
               </div>

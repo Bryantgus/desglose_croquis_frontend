@@ -9,7 +9,6 @@ export default function MainLayout() {
   // const { width, height} = useWindowSize()
 
   const showToast = useToastStore(s => s.showToast)
-  const openToast = useToastStore( s => s.openToast)
   const closeToast = useToastStore(s => s.closeToast)
   console.log(showToast);
   
@@ -35,7 +34,6 @@ export default function MainLayout() {
       <main className="min-h-screen w-full bg-slate-900 p-5
     bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] 
     bg-size-[50px_50px]">
-        <button onClick={() => openToast("Orden guardada correctamente", 'warning')} className="text-black text-xl">Show Toast</button>
         <Header />
         <Outlet />
       </main>

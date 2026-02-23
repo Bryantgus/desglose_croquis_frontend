@@ -30,3 +30,13 @@ export const useModifyOrden = () => {
   })
 };
 
+export const useDeleteOrden = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => ordenService.delete(id),
+     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ordenes'] })
+    }
+  })
+};
