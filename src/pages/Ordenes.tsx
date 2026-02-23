@@ -13,7 +13,7 @@ export default function Ordenes() {
   const [mode, setMode] = useState('crear');
 
   const [showModal, setShowModal] = useState(false)
-
+  
   const stats = useMemo(() => {
     if (!data) return { pendientes: 0, enProceso: 0, completadas: 0, total: 0 };
 

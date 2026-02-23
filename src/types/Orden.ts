@@ -1,14 +1,18 @@
+export type OrderStatus = 'Pendiente' | 'En Proceso' | 'Completado';
+
 export type Orden = {
-  id: number
+  id?: number
   cliente: string
-  fecha: string
-  estado: string
+  descripcion: string
+  fecha?: Date
+  estado: OrderStatus
+  asignadoA: string
 }
 
 export type ItemOrden = {
-  id: number;
+  id?: number;
   cliente: string;
-  fecha: string;
+  fecha?: Date;
   estado: string;
   action: (action: string) => void;
 }

@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { useIdStore } from '../../globalState/id';
-import { useQuery } from '@tanstack/react-query';
+import { useCreateOrden, useModifyOrden, useOrdenes } from '../../hooks/useOrdenes';
+import { useToastStore } from '../../globalState/toast';
+import SpinLoading from '../SpinLoading';
+import type { Orden, OrderStatus } from '../../types/Orden';
 
-type OrderStatus = 'Pendiente' | 'Proceso' | 'Completada';
-
-export interface OrdenItem {
-  id?: string;
-  cliente: string;
-  descripcion: string;
-  estado: OrderStatus;
-  asignadoA: string;
-}
 
 interface CrearEditarOrdenProps {
   mode: 'crear' | 'editar';
@@ -18,32 +12,33 @@ interface CrearEditarOrdenProps {
 }
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
-  Pendiente: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  Proceso: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  Completada: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  'Pendiente': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'En Proceso': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  'Completado': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   Pendiente: 'Pendiente',
-  Proceso: 'En Proceso',
-  Completada: 'Completada',
+  "En Proceso": 'En Proceso',
+  'Completado': 'Completada',
 };
 
 export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenProps) {
   const id = useIdStore(s => s.id);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // ← Estado para mostrar confirmación
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { mutate: createOrden, isPending } = useCreateOrden();
+  const { mutate: modificarOrden, isPending: isPending1 } = useModifyOrden()
+  
+  const openToast = useToastStore(s => s.openToast)
+  const [errors, setErrors] = useState<Partial<Record<keyof Orden, string>>>({});
 
-  const { data } = useQuery<OrdenItem[]>({
-    queryKey: ['ordenes'],
-    queryFn: () => Promise.resolve([]),
-    enabled: false,
-  });
+  const { data } = useOrdenes()
 
   const OrdenItemSelected = mode === 'editar'
     ? data?.find((it) => Number(it.id) === id)
     : null;
 
-  const [formData, setFormData] = useState<OrdenItem>(() => {
+  const [formData, setFormData] = useState<Orden>(() => {
     if (mode === 'editar' && OrdenItemSelected) {
       return { ...OrdenItemSelected };
     }
@@ -55,10 +50,9 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
     };
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof OrdenItem, string>>>({});
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof OrdenItem, string>> = {};
+    const newErrors: Partial<Record<keyof Orden, string>> = {};
     if (!formData.cliente.trim()) newErrors.cliente = 'Cliente requerido';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -66,12 +60,35 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (validate()) {
-      //patch
+      if (mode === 'crear') {
+        createOrden(formData, {
+          onSuccess: () => {
+            openToast('Orden Guardada Correctamente', 'success');
+            onCancel();
+          },
+          onError: () => {
+            onCancel()
+            openToast('Error al Guardar la Orden', 'error');
+          }
+        });
+      } else {
+        modificarOrden({id: id!, orden: formData}, {
+          onSuccess: () => {
+            onCancel();
+            openToast('Orden Modificada Correctamente', 'success');
+          },
+          onError: () => {
+            onCancel()
+            openToast('Error al Modificar la Orden', 'error');
+          }
+        })
+      }
     }
   };
 
-  const updateField = <K extends keyof OrdenItem>(field: K, value: OrdenItem[K]) => {
+  const updateField = <K extends keyof Orden>(field: K, value: Orden[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
@@ -255,15 +272,19 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
                 Cancelar
               </button>
 
-              <button
-                type="submit"
-                className="px-6 py-2 rounded-lg text-sm font-medium text-white
-                  bg-[#1a284d] hover:bg-[#0f172b] 
-                  shadow-lg shadow-[#0f172b]
-                  transition-all hover:-translate-y-0.5 cursor-pointer"
-              >
-                {mode === 'crear' ? 'Crear Orden' : 'Guardar Cambios'}
-              </button>
+              {isPending && isPending1 ?
+                <SpinLoading /> :
+
+                <button
+                  type="submit"
+                  className="px-6 py-2 rounded-lg text-sm font-medium text-white
+              bg-[#1a284d] hover:bg-[#0f172b] 
+              shadow-lg shadow-[#0f172b]
+              transition-all hover:-translate-y-0.5 cursor-pointer"
+                >
+                  {mode === 'crear' ? 'Crear Orden' : 'Guardar Cambios'}
+                </button>
+              }
             </div>
 
           </div>
@@ -272,3 +293,4 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
     </div>
   );
 }
+

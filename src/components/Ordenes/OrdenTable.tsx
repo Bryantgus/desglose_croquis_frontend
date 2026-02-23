@@ -33,7 +33,7 @@ export default function OrdenTable({ toggleMode }: Props) {
       </div>
 
       {/* Body scrollable - SIN tbody, solo div */}
-      <div className="overflow-y-auto sl:h-145 h-68 rounded-b-xl divide-y divide-slate-700/50 bg-[#192436]">
+      <div className="overflow-y-auto sl:h-135 h-68 rounded-b-xl divide-y divide-slate-700/50 bg-[#192436]">
         {ordenes?.map((it: Orden) => (
           <OrdenItem
             key={it.id}

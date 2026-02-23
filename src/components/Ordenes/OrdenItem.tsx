@@ -3,6 +3,7 @@ import Desglosesvg from "../../assets/Desglosesvg";
 import Editsvg from "../../assets/Editsvg";
 import type { ItemOrden } from "../../types/Orden";
 import { useIdStore } from "../../globalState/id";
+import { formatearFecha } from "../../utils/formated";
 
 export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOrden) {
 
@@ -18,9 +19,9 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOr
 
   return (
     <div className="grid grid-cols-5 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors">
-      <div className="font-mono text-blue-400">#ORD-{id.toString().padStart(3, '0')}</div>
+      {id && <div className="font-mono text-blue-400">#ORD-{id.toString().padStart(3, '0')}</div>}
       <div className="text-white font-medium">{cliente}</div>
-      <div className="text-slate-400">{fecha}</div>
+      {fecha && <div className="text-slate-400">{formatearFecha(fecha)}</div>}
       <div>
         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(estado)}`}>
           {estado}
@@ -28,21 +29,23 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOr
       </div>
       <div>
         <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => {            
-            setId(id)
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" title='Editar' onClick={() => {
+            if (id) {
+              setId(id)
+            }
             action('editar')
           }
-            }>
-          <Editsvg />
-        </button>
-        <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')}>
-          <Desglosesvg />
-        </button>
-        <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')}>
-          <Croquissvg />
-        </button>
+          }>
+            <Editsvg />
+          </button>
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')} title="Desglose">
+            <Desglosesvg />
+          </button>
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')} title="Croquis">
+            <Croquissvg />
+          </button>
+        </div>
       </div>
-    </div>
     </div >
   );
 }
