@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useIdStore } from '../../globalState/id';
+import { useQuery } from '@tanstack/react-query';
 
-// Tipos
-type OrderStatus = 'pendiente' | 'proceso' | 'completada';
+type OrderStatus = 'Pendiente' | 'Proceso' | 'Completada';
 
-interface OrderData {
+export interface OrdenItem {
   id?: string;
   cliente: string;
   descripcion: string;
@@ -13,45 +14,52 @@ interface OrderData {
 
 interface CrearEditarOrdenProps {
   mode: 'crear' | 'editar';
-  initialData?: OrderData;
-  onSave: (data: OrderData) => void;
   onCancel: () => void;
 }
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
-  pendiente: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  proceso: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  completada: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  Pendiente: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  Proceso: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  Completada: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
-  pendiente: 'Pendiente',
-  proceso: 'En Proceso',
-  completada: 'Completada',
+  Pendiente: 'Pendiente',
+  Proceso: 'En Proceso',
+  Completada: 'Completada',
 };
 
-export default function CrearEditarOrden({
-  mode,
-  initialData,
-  onSave,
-  onCancel
-}: CrearEditarOrdenProps) {
+export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenProps) {
+  const id = useIdStore(s => s.id);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // ← Estado para mostrar confirmación
 
-  const [formData, setFormData] = useState<OrderData>({
-    cliente: '',
-    descripcion: '',
-    estado: 'pendiente',
-    asignadoA: '',
-    ...initialData
+  const { data } = useQuery<OrdenItem[]>({
+    queryKey: ['ordenes'],
+    queryFn: () => Promise.resolve([]),
+    enabled: false,
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof OrderData, string>>>({});
+  const OrdenItemSelected = mode === 'editar'
+    ? data?.find((it) => Number(it.id) === id)
+    : null;
+
+  const [formData, setFormData] = useState<OrdenItem>(() => {
+    if (mode === 'editar' && OrdenItemSelected) {
+      return { ...OrdenItemSelected };
+    }
+    return {
+      cliente: '',
+      descripcion: '',
+      estado: 'Pendiente',
+      asignadoA: '',
+    };
+  });
+
+  const [errors, setErrors] = useState<Partial<Record<keyof OrdenItem, string>>>({});
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof OrderData, string>> = {};
-
+    const newErrors: Partial<Record<keyof OrdenItem, string>> = {};
     if (!formData.cliente.trim()) newErrors.cliente = 'Cliente requerido';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -59,22 +67,33 @@ export default function CrearEditarOrden({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      onSave(formData);
+      //patch
     }
   };
 
-  const updateField = <K extends keyof OrderData>(field: K, value: OrderData[K]) => {
+  const updateField = <K extends keyof OrdenItem>(field: K, value: OrdenItem[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (id) {
+      //delete
+    }
+    onCancel()
+  };
+
+  if (!data) return;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
-      style={{
-        animation: 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-      }}>
+      style={{ animation: 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }}>
 
       <div className="w-full max-w-2xl glass-panel rounded-2xl bg-slate-800/70 
         border border-slate-700/50 shadow-2xl overflow-hidden">
@@ -86,7 +105,7 @@ export default function CrearEditarOrden({
               {mode === 'crear' ? 'Nueva Orden' : 'Editar Orden'}
             </h2>
             <p className="text-sm text-slate-400">
-              {mode === 'crear' ? 'Crea una nueva orden de trabajo' : `Orden #${initialData?.id}`}
+              {mode === 'crear' ? 'Crea una nueva orden de trabajo' : `Orden #${id}`}
             </p>
           </div>
 
@@ -150,9 +169,9 @@ export default function CrearEditarOrden({
                   value={formData.estado}
                   onChange={(e) => updateField('estado', e.target.value as OrderStatus)}
                   className="w-full h-10 bg-slate-900/50 rounded-lg px-3 text-white text-sm
-                border border-slate-600
-                focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
-                transition-all appearance-none cursor-pointer"
+                    border border-slate-600
+                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
+                    transition-all appearance-none cursor-pointer"
                 >
                   {Object.entries(STATUS_LABELS).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -181,27 +200,57 @@ export default function CrearEditarOrden({
           </div>
 
           {/* Actions */}
-          <div className={`flex ${mode === 'crear' ? 'justify-end' : "justify-between"} gap-3 pt-4 border-t border-slate-700/50`}>
-            {mode === 'editar' &&
-              <div>
-                <button
-                  type="submit"
-                  className="px-6 py-2 rounded-lg text-sm font-medium text-white
-              bg-[#1a284d] hover:bg-[#0f172b] 
-              shadow-lg shadow-[#0f172b]
-              transition-all hover:-translate-y-0.5 cursor-pointer"
-                >
-                  Eliminar Orden
-                </button>
-              </div>
-            }
+          <div className={`flex ${mode === 'crear' ? 'justify-end' : "justify-between"} gap-3 pt-4 border-t border-slate-700/50 items-center`}>
 
-            <div>
+            {/* Sección izquierda: Eliminar o Confirmación */}
+            {mode === 'editar' && (
+              <div className="flex items-center gap-3">
+                {!showDeleteConfirm ? (
+                  <button
+                    type="button"
+                    onClick={handleDeleteClick}
+                    className="px-6 py-2 rounded-lg text-sm font-medium text-white
+                      bg-[#1a284d] hover:bg-[#0f172b] 
+                      shadow-lg shadow-[#0f172b]
+                      transition-all hover:-translate-y-0.5 cursor-pointer"
+                  >
+                    Eliminar Orden
+                  </button>
+                ) : (
+                  // Confirmación con efecto saltico
+                  <div
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg
+                      bg-slate-900/80 border border-red-500/30
+                      animate-[slideIn_0.3s_ease-out]"
+                    style={{
+                      animation: 'slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                  >
+                    <span className="text-sm text-slate-300">
+                      ¿Está seguro de eliminar la orden?
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={handleConfirmDelete}
+                      className="px-3 py-1 rounded text-xs font-medium text-white
+                        bg-red-600 hover:bg-red-500 
+                        transition-colors cursor-pointer"
+                    >
+                      Sí
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Botones derecha: Cancelar y Guardar */}
+            <div className='flex gap-3'>
               <button
                 type="button"
                 onClick={onCancel}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300
-              hover:bg-slate-700/50 transition-colors cursor-pointer"
+                  hover:bg-slate-700/50 transition-colors cursor-pointer"
               >
                 Cancelar
               </button>
@@ -209,13 +258,14 @@ export default function CrearEditarOrden({
               <button
                 type="submit"
                 className="px-6 py-2 rounded-lg text-sm font-medium text-white
-              bg-[#1a284d] hover:bg-[#0f172b] 
-              shadow-lg shadow-[#0f172b]
-              transition-all hover:-translate-y-0.5 cursor-pointer"
+                  bg-[#1a284d] hover:bg-[#0f172b] 
+                  shadow-lg shadow-[#0f172b]
+                  transition-all hover:-translate-y-0.5 cursor-pointer"
               >
                 {mode === 'crear' ? 'Crear Orden' : 'Guardar Cambios'}
               </button>
             </div>
+
           </div>
         </form>
       </div>

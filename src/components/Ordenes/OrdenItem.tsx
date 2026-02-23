@@ -2,8 +2,11 @@ import Croquissvg from "../../assets/Croquissvg";
 import Desglosesvg from "../../assets/Desglosesvg";
 import Editsvg from "../../assets/Editsvg";
 import type { ItemOrden } from "../../types/Orden";
+import { useIdStore } from "../../globalState/id";
 
 export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOrden) {
+
+  const setId = useIdStore((state) => state.setId);
   const getStatusColor = (estado: string) => {
     switch (estado) {
       case 'Completado': return 'bg-emerald-500/20 text-emerald-400';
@@ -25,17 +28,21 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOr
       </div>
       <div>
         <div className="flex items-center gap-2">
-           <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('editar')}>
-            <Editsvg />
-          </button>
-          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')}>
-            <Desglosesvg />
-          </button>
-          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')}>
-            <Croquissvg />
-          </button>
-        </div>
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => {            
+            setId(id)
+            action('editar')
+          }
+            }>
+          <Editsvg />
+        </button>
+        <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')}>
+          <Desglosesvg />
+        </button>
+        <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')}>
+          <Croquissvg />
+        </button>
       </div>
     </div>
+    </div >
   );
 }

@@ -1,10 +1,18 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Header-Sidebar/Sidebar";
 import Header from "../components/Header-Sidebar/Header";
+import Toast from "../components/Toast";
+import { useToastStore } from "../globalState/toast";
 // import { useWindowSize } from "../hooks/useWindowSize";
 export default function MainLayout() {
 
   // const { width, height} = useWindowSize()
+
+  const showToast = useToastStore(s => s.showToast)
+  const openToast = useToastStore( s => s.openToast)
+  const closeToast = useToastStore(s => s.closeToast)
+  console.log(showToast);
+  
 
   return (
     <div className="flex w-full min-h-screen relative">
@@ -14,9 +22,20 @@ export default function MainLayout() {
         <Sidebar />
       </div>
 
+      {showToast &&
+        <Toast onClose={() => {closeToast();
+        console.log("Cerrando");
+        console.log(showToast);
+        
+        }
+        } />
+      }
+
+
       <main className="min-h-screen w-full bg-slate-900 p-5
     bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] 
     bg-size-[50px_50px]">
+        <button onClick={() => openToast("Orden guardada correctamente", 'warning')} className="text-black text-xl">Show Toast</button>
         <Header />
         <Outlet />
       </main>

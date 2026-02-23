@@ -12,7 +12,6 @@ export default function Ordenes() {
   const { data, isLoading, isError, error } = useOrdenes()
   const [mode, setMode] = useState('crear');
 
-
   const [showModal, setShowModal] = useState(false)
 
   const stats = useMemo(() => {
@@ -31,7 +30,6 @@ export default function Ordenes() {
     setShowModal(true)
   }
 
-
   return (
     <div id="module-ordenes" className="module-content space-y-6"
       style={{
@@ -41,9 +39,6 @@ export default function Ordenes() {
       {showModal &&
         <CrearEditarOrden
           mode={mode as 'crear' | 'editar'}
-          onSave={(data) => {
-            console.log('Crear:', data);
-          }}
           onCancel={() => setShowModal(false)}
         />
       }

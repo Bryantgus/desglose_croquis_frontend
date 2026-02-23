@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Ventanasvg from "../../assets/Ventanasvg";
 import { useLocation, useNavigate } from 'react-router-dom';
 import Item from "./Item";
@@ -27,6 +27,10 @@ export default function Sidebar() {
   const route = location.pathname.split('/')[1]
   const [moduleSelected, setModuleSelected] = useState(route)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    setModuleSelected(route)
+  }, [route])
 
   const setActive = (module: string) => {
     setModuleSelected(module)
