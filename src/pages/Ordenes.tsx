@@ -19,7 +19,7 @@ export default function Ordenes() {
 
     return {
       pendientes: data.filter((item: Orden) => item.estado === 'Pendiente').length,
-      enProceso: data.filter((item: Orden) => item.estado === 'Procesando').length,
+      enProceso: data.filter((item: Orden) => item.estado === 'En Proceso').length,
       completadas: data.filter((item: Orden) => item.estado === 'Completado').length,
       total: data.length
     };
