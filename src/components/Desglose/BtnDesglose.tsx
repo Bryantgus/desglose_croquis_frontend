@@ -31,7 +31,9 @@ export default function BtnDesglose({ perfil, label, togglePerfil, isSelected, h
         </div>
       )}
 
-      <span className="text-xl font-bold ">{label} ({cantidad})</span>
+      <span className="text-xl font-bold">
+        {label} {cantidad && `(${cantidad})`}
+      </span>
     </button>
   )
 }

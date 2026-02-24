@@ -60,16 +60,6 @@ export default function Desglose() {
           animation: 'slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)'
         }}>
         <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
-        <ItemDesglose />
       </div>
     </div>
 
