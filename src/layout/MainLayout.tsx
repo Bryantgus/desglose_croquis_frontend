@@ -9,9 +9,7 @@ export default function MainLayout() {
   // const { width, height} = useWindowSize()
 
   const showToast = useToastStore(s => s.showToast)
-  const closeToast = useToastStore(s => s.closeToast)
-  console.log(showToast);
-  
+  const closeToast = useToastStore(s => s.closeToast)  
 
   return (
     <div className="flex w-full min-h-screen relative">

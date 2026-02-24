@@ -7,6 +7,7 @@ import BtnDesglose from './BtnDesglose';
 interface PerfilOption {
   id: PerfilType;
   label: string;
+
 }
 
 const PERFILES: PerfilOption[] = [
@@ -17,11 +18,12 @@ const PERFILES: PerfilOption[] = [
 ];
 
 interface SetupProps {
+  perfilesSelected: PerfilType[]
   onSave: (selectedPerfiles: PerfilType[]) => void;
 }
 
-export default function SetupDesglose({ onSave }: SetupProps) {
-  const [selectedPerfiles, setSelectedPerfiles] = useState<PerfilType[]>([]);
+export default function SetupDesglose({ onSave, perfilesSelected }: SetupProps) {
+  const [selectedPerfiles, setSelectedPerfiles] = useState<PerfilType[]>(perfilesSelected);
 
   const togglePerfil = (perfil: PerfilType) => {
     setSelectedPerfiles(prev =>
@@ -59,7 +61,7 @@ export default function SetupDesglose({ onSave }: SetupProps) {
         <div className="p-6">
           <div className="grid grid-cols-2 gap-4">
             {PERFILES.map((perfil) => (
-             <BtnDesglose perfil={perfil.id} label={perfil.label} togglePerfil={togglePerfil} isSelected={isSelected(perfil.id)} />
+              <BtnDesglose key={perfil.id} perfil={perfil.id} label={perfil.label} togglePerfil={togglePerfil} isSelected={isSelected(perfil.id) } />
             ))}
           </div>
 
