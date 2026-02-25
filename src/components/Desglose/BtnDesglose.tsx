@@ -1,9 +1,9 @@
-import type { PerfilType } from "../../types/Desglose"
+import type { TIPO_PERFIL } from "../../types/ItemOrden"
 
 type Props = {
-  perfil: PerfilType
+  perfil: TIPO_PERFIL
   label: string
-  togglePerfil: (perfil: PerfilType) => void
+  togglePerfil: (perfil: TIPO_PERFIL) => void
   isSelected: boolean
   width?: string
   height?: string

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { PerfilType } from '../../types/Desglose';
+import type { PerfilType } from '../../types/ItemOrden';
 import BtnDesglose from './BtnDesglose';
 
 

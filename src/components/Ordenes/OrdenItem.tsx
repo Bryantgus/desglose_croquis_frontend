@@ -1,11 +1,11 @@
 import Croquissvg from "../../assets/Croquissvg";
 import Desglosesvg from "../../assets/Desglosesvg";
 import Editsvg from "../../assets/Editsvg";
-import type { ItemOrden } from "../../types/Orden";
-import { useIdStore } from "../../globalState/id";
+import type { OrdenAction } from "../../types/Orden";
+import { useIdStore } from "../../globalState/ordenId";
 import { formatearFecha } from "../../utils/formated";
 
-export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOrden) {
+export default function OrdenItem({ id, cliente, fecha, estado, action }: OrdenAction) {
 
   const setId = useIdStore((state) => state.setId);
   const getStatusColor = (estado: string) => {
@@ -16,6 +16,11 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOr
       default: return 'bg-blue-500/20 text-blue-400';
     }
   };
+
+  const selectedOption = (actionString: string) => {
+    setId(Number(id))
+    action(actionString)
+  }
 
   return (
     <div className="grid grid-cols-5 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors">
@@ -30,18 +35,15 @@ export default function OrdenItem({ id, cliente, fecha, estado, action }: ItemOr
       <div>
         <div className="flex items-center gap-2">
           <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" title='Editar' onClick={() => {
-            if (id) {
-              setId(id)
-            }
-            action('editar')
+            selectedOption('editar')
           }
           }>
             <Editsvg />
           </button>
-          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('desglose')} title="Desglose">
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => selectedOption('desglose')} title="Desglose">
             <Desglosesvg />
           </button>
-          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => action('croquis')} title="Croquis">
+          <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" onClick={() => selectedOption('croquis')} title="Croquis">
             <Croquissvg />
           </button>
         </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useIdStore } from '../../globalState/id';
+import { useIdStore } from '../../globalState/ordenId';
 import { useCreateOrden, useDeleteOrden, useModifyOrden, useOrdenes } from '../../hooks/useOrdenes';
 import { useToastStore } from '../../globalState/toast';
 import SpinLoading from '../SpinLoading';
@@ -26,7 +26,7 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
 
 export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenProps) {
   const navigate = useNavigate()
-  const id = useIdStore(s => s.id);
+  const id = useIdStore(s => s.ordenId);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { mutate: createOrden, isPending } = useCreateOrden();
   const { mutate: modificarOrden, isPending: isPending1 } = useModifyOrden();

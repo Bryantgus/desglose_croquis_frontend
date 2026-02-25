@@ -8,7 +8,6 @@ type Props = {
   toggleMode: (mode: 'editar') => void
 }
 export default function OrdenTable({ toggleMode }: Props) {
-
   const navigate = useNavigate()
   const { data: ordenes } = useOrdenes()
   const doAction = (action: string) => {

@@ -9,7 +9,7 @@ export type Orden = {
   asignadoA: string
 }
 
-export type ItemOrden = {
+export type OrdenAction = {
   id?: number;
   cliente: string;
   fecha?: Date;

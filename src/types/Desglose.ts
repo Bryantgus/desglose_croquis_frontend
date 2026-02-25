@@ -1,1 +1,0 @@
-export type PerfilType = 'p65' | 'tradicional' | 'p92' | 'p40';
