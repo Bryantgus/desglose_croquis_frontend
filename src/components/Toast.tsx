@@ -63,7 +63,7 @@ export default function Toast({ onClose }: ToastProps) {
         flex items-center gap-3 px-4 py-3 rounded-xl
         glass-panel bg-slate-800/90 backdrop-blur-sm
         border shadow-lg shadow-black/20
-        min-w-[300px] max-w-[400px]
+        min-w-75 max-w-100
         ${TYPE_COLORS[type]}
         ${isExiting
           ? 'animate-[slideOutRight_0.4s_ease-in_forwards]'
@@ -71,7 +71,7 @@ export default function Toast({ onClose }: ToastProps) {
         }
       `}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {TYPE_ICONS[type]}
       </div>
 
@@ -81,7 +81,7 @@ export default function Toast({ onClose }: ToastProps) {
 
       <button
         onClick={handleClose}
-        className="flex-shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
+        className="shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
       >
         <svg className="w-4 h-4 opacity-60 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>

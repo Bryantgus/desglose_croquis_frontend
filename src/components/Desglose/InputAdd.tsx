@@ -22,6 +22,7 @@ export default function InputAdd({
       onAdd(numValue);
       setValue('');
     }
+    setValue('0')
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -46,7 +47,7 @@ export default function InputAdd({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 h-10 bg-slate-900/50 rounded-lg px-3 text-white text-sm text-center
+          className="flex-1 h-10 bg-slate-900/50 rounded-lg px-3 text-white text-2xl font-bold text-center
             border border-slate-600
             focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
             transition-all placeholder:text-slate-500

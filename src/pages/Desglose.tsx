@@ -1,49 +1,71 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import SetupDesglose from "../components/Desglose/SetupDesglose";
-import ItemDesglose from "../components/Desglose/ItemDesglose";
-import BtnDesglose from "../components/Desglose/BtnDesglose";
-import InputAdd from "../components/Desglose/InputAdd";
 import { useCreateItemOrden, useItemOrdenes } from "../hooks/useItemOrden";
 import { useIdStore } from "../globalState/ordenId";
 import type { TIPO_PERFIL } from "../types/ItemOrden";
 import NoOrdenSelected from "../components/NoOrdenSelected";
 import SpinLoading from "../components/SpinLoading";
+import DesgloseContent from "../components/Desglose/DesgloseContent";
 
 export default function Desglose() {
+
   const ordenId = useIdStore((s) => s.ordenId);
   const { data, isLoading } = useItemOrdenes(Number(ordenId));
   const addDesglose = useCreateItemOrden();
 
-  const itemsOrden = {
+  const [showSetup, setShowSetup] = useState(false);
+  const [perfiles, setPerfiles] = useState<TIPO_PERFIL[]>([]);
+  const [perfilSelected, setPerfilSelected] = useState<TIPO_PERFIL>('' as TIPO_PERFIL);
+
+  const itemsPerPerfil = useMemo(() => ({
     p65: data?.filter((i) => i.tipoPerfil === "p65") || [],
     tradicional: data?.filter((i) => i.tipoPerfil === "tradicional") || [],
     p92: data?.filter((i) => i.tipoPerfil === "p92") || [],
     p40: data?.filter((i) => i.tipoPerfil === "p40") || [],
-  };
+  }), [data]);
 
-  const tieneItems = Object.values(itemsOrden).some((arr) => arr.length > 0);
-  const perfilesUsados = Object.keys(itemsOrden).filter(
-    (perfil) => itemsOrden[perfil as keyof typeof itemsOrden].length > 0
-  ) as TIPO_PERFIL[];
+  const perfilesUsados = useMemo(() =>
+    Object.keys(itemsPerPerfil).filter(
+      (perfil) => itemsPerPerfil[perfil as keyof typeof itemsPerPerfil].length > 0
+    ) as TIPO_PERFIL[],
+    [itemsPerPerfil]
+  );
 
-  const [manualShowSetup, setManualShowSetup] = useState(false);
+  const tieneItems = useMemo(() =>
+    Object.values(itemsPerPerfil).some((arr) => arr.length > 0),
+    [itemsPerPerfil]
+  );
 
-  const [manualPerfil, setManualPerfil] = useState<TIPO_PERFIL | null>(null);
+  useEffect(() => {
+    if (data && perfiles.length === 0) {
+      setPerfiles(perfilesUsados);
+      setPerfilSelected(perfilesUsados[0] || 'p65');
+      setShowSetup(!tieneItems);
+    }
+  }, [data, tieneItems, perfilesUsados, perfiles.length]);
 
-  const showSetup = manualShowSetup || (data !== undefined && !tieneItems);
+  if (isLoading) return (
+    <div className="flex items-center justify-center">
+      <SpinLoading />
+    </div>
+  );
 
-  const perfilSelected = manualPerfil || perfilesUsados[0];
+  if (ordenId === 0) return (
+    <div className="flex items-center justify-center">
+      <NoOrdenSelected />
+    </div>
+  );
 
   const handleSave = (perfilesSeleccionados: TIPO_PERFIL[]) => {
     perfilesSeleccionados.forEach((perfil) => {
-      const listaActual = itemsOrden[perfil as keyof typeof itemsOrden];
+      const listaActual = itemsPerPerfil[perfil as keyof typeof itemsPerPerfil];
       if (listaActual.length === 0) {
         addDesglose.mutate({
           ordenId: Number(ordenId),
           itemOrden: {
             ancho: "0",
             alto: "0",
-            etiqueta: "1",
+            etiqueta: `${listaActual.length + 1}`,
             vias: 2,
             tipoCristal: "natural liso",
             tipoPerfil: perfil,
@@ -52,71 +74,31 @@ export default function Desglose() {
         });
       }
     });
-    setManualShowSetup(false);
+    setPerfiles(perfilesSeleccionados);
+    setShowSetup(false);
   };
 
   const handlePerfilSelected = (perfil: TIPO_PERFIL) => {
-    setManualPerfil(perfil);
+    setPerfilSelected(perfil);
   };
-
-  if (isLoading) return <SpinLoading />;
+  const shouldShowSetup = showSetup || perfiles.length === 0;
 
   return (
     <div style={{ animation: "slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-      {ordenId === 0 ? (
-        <div className="flex items-center justify-center">
-          <NoOrdenSelected />
-        </div>
-      ) : (
-        <div>
-          {showSetup && (
-            <SetupDesglose
-              perfilesSelected={perfilesUsados}
-              onSave={handleSave}
-            />
-          )}
-
-          <div className="flex items-center gap-3 mb-3 justify-between">
-            <div className="flex items-center gap-3">
-              <p className="font-semibold text-white text-center">Perfil actual:</p>
-              <div className="text-white flex gap-3 items-center">
-                {perfilesUsados.map((p) => (
-                  <BtnDesglose
-                    key={p}
-                    perfil={p}
-                    label={p.charAt(0).toUpperCase() + p.slice(1)}
-                    togglePerfil={handlePerfilSelected}
-                    isSelected={p === perfilSelected}
-                    width="w-40"
-                    height="h-10"
-                    cantidad={itemsOrden[p].length}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <InputAdd onAdd={() => console.log("Agregar...")} />
-              <button
-                className="text-white p-2 font-semibold border-2 rounded-xl border-slate-600 hover:border-slate-500 text-[12px] cursor-pointer"
-                onClick={() => setManualShowSetup(true)}
-              >
-                Modificar Perfiles
-              </button>
-            </div>
-          </div>
-
-          <div
-            className="grid grid-cols-4 sl:grid-cols-6 sl:h-185 h-115 p-3 border-2 border-slate-700 rounded-xl gap-x-10 items-start justify-center gap-y-5 mt-5 overflow-y-auto"
-            style={{ animation: "slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)" }}
-          >
-            {/* Mapeo dinámico de los items del perfil seleccionado */}
-
-            <ItemDesglose />
-
-          </div>
-        </div>
+      {shouldShowSetup && (
+        <SetupDesglose
+          perfilesSelected={perfiles}
+          onSave={handleSave}
+        />
       )}
+
+      <DesgloseContent
+        perfilSelected={perfilSelected || perfiles[0] || 'p65'}
+        perfilesUsados={perfiles.length > 0 ? perfiles : perfilesUsados}
+        handlePerfilSelected={handlePerfilSelected}
+        itemsPerPerfil={itemsPerPerfil}
+        setShowSetup={setShowSetup}
+      />
     </div>
   );
 }

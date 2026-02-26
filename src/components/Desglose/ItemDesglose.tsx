@@ -4,13 +4,20 @@ import Caracteristicas from "./Caracteristicas";
 import ItemMedida from "./ItemMedida";
 import Warningsvg from "../../assets/Warningsvg";
 import Configsvg from "../../assets/Configsvg";
+import type { ItemOrden } from "../../types/ItemOrden";
 
-export default function ItemDesglose() {
+type Props = {
+  itemData: ItemOrden
+  mode: 'edit' | 'ver'
+}
 
-  const [mode, setMode] = useState('ver')
+export default function ItemDesglose({ itemData, mode }: Props) {
+  const [itemDataNow, setItemData] = useState<ItemOrden>(itemData)
+
+  const [modeStatus, setMode] = useState(mode)
 
   const toggleMode = () => {
-    if (mode === 'edit') {
+    if (modeStatus === 'edit') {
       setMode('ver')
     } else {
       setMode('edit')
@@ -26,15 +33,15 @@ export default function ItemDesglose() {
       flex flex-col gap-1">
 
       <div className="flex items-center justify-between">
-        {/* <div className="flex items-center justify-center gap-3"> */}
 
         <div className="bg-slate-900/50 rounded-lg p-1 border border-slate-700 w-30">
           <label id='etiqueta' className="text-xs text-slate-400 block mb-1">Etiqueta</label>
           <input
-          name='etiqueta'
+          value={itemDataNow.etiqueta}
+            name='etiqueta'
             type="text"
             className="text-center w-20 bg-slate-800 text-white text-sm font-medium rounded  
-                border border-slate-600 focus:border-blue-500 focus:outline-none" 
+                border border-slate-600 focus:border-blue-500 focus:outline-none"
           />
         </div>
 
@@ -52,7 +59,6 @@ export default function ItemDesglose() {
             <Configsvg />
           </button>
         </div>
-        {/* </div> */}
       </div>
 
       <div className="flex justify-between gap-1">
@@ -65,7 +71,6 @@ export default function ItemDesglose() {
         <CalculoDesglose />
       }
 
-      {/* Error messages */}
       <p className="text-red-400 text-xs flex items-center gap-1" onClick={toggleMode}>
         <Warningsvg />
         Formato de ancho inválido
