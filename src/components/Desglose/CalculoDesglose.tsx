@@ -1,4 +1,9 @@
-export default function CalculoDesglose() {
+type Props = {
+  label: string
+  ancho: string
+  alto: string
+}
+export default function CalculoDesglose({label, ancho, alto}: Props) {
   const items = [
     { label: 'RC', value: '1200' },
     { label: 'Lateral', value: '2400' },

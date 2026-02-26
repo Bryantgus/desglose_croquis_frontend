@@ -63,14 +63,13 @@ export default function CrearEditarOrden({ mode, onCancel }: CrearEditarOrdenPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (validate()) {
       if (mode === 'crear') {
         createOrden(formData, {
-          onSuccess: () => {
+          onSuccess: (data) => {
             openToast('Orden Guardada Correctamente', 'success');
             onCancel();
-            setId(Number(id))
+            setId(Number(data.id))
             navigate('/desglose')
           },
           onError: () => {

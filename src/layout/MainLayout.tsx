@@ -20,10 +20,7 @@ export default function MainLayout() {
       </div>
 
       {showToast &&
-        <Toast onClose={() => {closeToast();
-        console.log("Cerrando");
-        console.log(showToast);
-        
+        <Toast onClose={() => {closeToast();       
         }
         } />
       }

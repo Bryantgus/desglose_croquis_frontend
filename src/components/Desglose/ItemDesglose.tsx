@@ -12,10 +12,18 @@ type Props = {
 }
 
 export default function ItemDesglose({ itemData, mode }: Props) {
-  const [itemDataNow, setItemData] = useState<ItemOrden>(itemData)
 
+  const [itemDataNow, setItemDataNow] = useState<ItemOrden>(itemData)
+  console.log(itemDataNow);
+  
   const [modeStatus, setMode] = useState(mode)
 
+  const setDataFnc = (label: string, value: string) => {
+    setItemDataNow((prev) => ({
+      ...prev,
+      [label]: value
+    })
+  )}
   const toggleMode = () => {
     if (modeStatus === 'edit') {
       setMode('ver')
@@ -37,7 +45,8 @@ export default function ItemDesglose({ itemData, mode }: Props) {
         <div className="bg-slate-900/50 rounded-lg p-1 border border-slate-700 w-30">
           <label id='etiqueta' className="text-xs text-slate-400 block mb-1">Etiqueta</label>
           <input
-          value={itemDataNow.etiqueta}
+            value={itemDataNow.etiqueta}
+            onChange={(e) => setDataFnc('etiqueta', e.target.value)}
             name='etiqueta'
             type="text"
             className="text-center w-20 bg-slate-800 text-white text-sm font-medium rounded  
@@ -62,13 +71,13 @@ export default function ItemDesglose({ itemData, mode }: Props) {
       </div>
 
       <div className="flex justify-between gap-1">
-        <ItemMedida label="Ancho" />
-        <ItemMedida label="Alto" />
+        <ItemMedida label="Ancho" value={itemDataNow.ancho} changeValue={setDataFnc} />
+        <ItemMedida label="Alto" value={itemDataNow.alto} changeValue={setDataFnc}/>
       </div>
 
       {mode === 'edit' ?
         <Caracteristicas /> :
-        <CalculoDesglose />
+        <CalculoDesglose label={itemDataNow.etiqueta} ancho={itemDataNow.ancho} alto={itemDataNow.alto} />
       }
 
       <p className="text-red-400 text-xs flex items-center gap-1" onClick={toggleMode}>

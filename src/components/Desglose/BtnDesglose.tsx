@@ -11,6 +11,7 @@ type Props = {
   cantidad?: number
 }
 export default function BtnDesglose({ perfil, label, togglePerfil, isSelected, height, width, cantidad }: Props) {
+  const cantidadFormated = `(${cantidad})`
   return (
     <button
       onClick={() => togglePerfil(perfil)}
@@ -25,7 +26,7 @@ export default function BtnDesglose({ perfil, label, togglePerfil, isSelected, h
     >
 
       <span className="text-xl font-bold">
-        {label} {cantidad && `(${cantidad})`}
+        {label} {cantidad && cantidadFormated}
       </span>
     </button>
   )

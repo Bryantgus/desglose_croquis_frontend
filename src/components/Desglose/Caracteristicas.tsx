@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TIPOS_CRISTAL_VALORES, type TIPO_CRISTAL } from "../../types/ItemOrden";
+import { TIPOS_CRISTAL_VALORES } from "../../types/ItemOrden";
 export default function Caracteristicas() {
 
   const [optionOpened, setOptionOpened] = useState<string | null>(null)
@@ -10,7 +10,7 @@ export default function Caracteristicas() {
   })
   const openOptions = (option: string) => {
     console.log(option, optionOpened);
-    
+
     if (option === optionOpened) {
       setOptionOpened(null)
       return
@@ -94,7 +94,7 @@ export default function Caracteristicas() {
                 features.colorCristal === 'natural martillado' ? 'Natural M.' :
                   features.colorCristal === 'bronze liso' ? 'Bronze L.' :
                     features.colorCristal === 'bronze martillado' ? 'Bronze L.' :
-                      features.colorCristal === 'azul liso' ? 'Azul M.' :
+                      features.colorCristal === 'azul liso' ? 'Azul L.' :
                         features.colorCristal === 'azul martillado' ? 'Azul M.' :
                           ''
             }

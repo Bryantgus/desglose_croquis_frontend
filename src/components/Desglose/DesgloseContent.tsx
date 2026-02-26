@@ -6,7 +6,7 @@ import ItemDesglose from "./ItemDesglose";
 type Props = {
   itemsPerPerfil: Record<string, ItemOrden[]>
   perfilesUsados: TIPO_PERFIL[]
-  perfilSelected: TIPO_PERFIL
+  perfilSelected: TIPO_PERFIL | null
   handlePerfilSelected: (perfil: TIPO_PERFIL) => void
   setShowSetup: (v: boolean) => void
 }
@@ -49,11 +49,11 @@ export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, 
         style={{ animation: "slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)" }}
       >
 
-        {itemsPerPerfil[perfilSelected].map((item: ItemOrden, index: number) => (
-          <ItemDesglose 
-          key={index + 1}
-          itemData={item}
-           mode={"edit"} />
+        {perfilSelected && itemsPerPerfil[perfilSelected].map((item: ItemOrden, index: number) => (
+          <ItemDesglose
+            key={index}
+            itemData={item}
+            mode={"edit"} />
         ))}
 
       </div>
