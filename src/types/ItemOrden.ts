@@ -15,6 +15,7 @@ export const TIPOS_CRISTAL_VALORES = [
 export type TIPO_CRISTAL = (typeof TIPOS_CRISTAL_VALORES)[number];
 
 export type ItemOrden = {
+    id: number
     ancho: string
     alto: string
     colorPerfil: COLORES_PERFIL

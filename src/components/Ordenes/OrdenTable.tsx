@@ -18,6 +18,10 @@ export default function OrdenTable({ toggleMode }: Props) {
     }
   }
 
+  const ordenesReversed = ordenes ? [...ordenes].reverse() : []
+
+
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -28,12 +32,11 @@ export default function OrdenTable({ toggleMode }: Props) {
           <div>Fecha</div>
           <div>Estado</div>
           <div>Acciones</div>
-        </div>
+        </div>s
       </div>
 
-      {/* Body scrollable - SIN tbody, solo div */}
       <div className="overflow-y-auto sl:h-135 h-68 rounded-b-xl divide-y divide-slate-700/50 bg-[#192436]">
-        {ordenes?.map((it: Orden) => (
+        {ordenesReversed?.map((it: Orden) => (
           <OrdenItem
             key={it.id}
             id={it.id}

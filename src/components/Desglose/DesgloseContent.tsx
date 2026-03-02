@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { ItemOrden, TIPO_PERFIL } from "../../types/ItemOrden";
 import BtnDesglose from "./BtnDesglose";
 import InputAdd from "./InputAdd";
@@ -11,9 +12,31 @@ type Props = {
   setShowSetup: (v: boolean) => void
 }
 
+type Mode = "edit" | "ver"
+
 export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, perfilSelected, itemsPerPerfil, setShowSetup }: Props) {
+  const [mode, setMode] = useState<Mode>('edit')
+  console.log(mode);
+
+  const toggleMode = () => {
+    setMode(prev => prev === 'edit' ? 'ver' : 'edit');
+  };
+
+  useEffect(() => {
+    setMode(mode);
+  }, [mode]);
+
   return (
     <div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-white mb-1 pb-5">Desglose de Perfiles y Cristales</h1>
+        <button
+          className="text-white p-2 font-semibold border-2 rounded-xl border-slate-600 hover:border-slate-500 text-[16px]  px-20 cursor-pointer"
+          onClick={toggleMode}
+        >
+          {mode === 'edit' ? "Ver Desglose" : "Modificar Desglose"}
+        </button>
+      </div>
       <div className="flex items-center gap-3 mb-3 justify-between">
         <div className="flex items-center gap-3">
           <p className="font-semibold text-white text-center">Perfil actual:</p>
@@ -34,7 +57,7 @@ export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, 
         </div>
 
         <div className="flex items-center gap-4">
-          <InputAdd onAdd={() => console.log("Agregar...")} />
+          <InputAdd perfilSelected={perfilSelected} data={itemsPerPerfil[perfilSelected!]} />
           <button
             className="text-white p-2 font-semibold border-2 rounded-xl border-slate-600 hover:border-slate-500 text-[12px] cursor-pointer"
             onClick={() => setShowSetup(true)}
@@ -45,15 +68,15 @@ export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, 
       </div>
 
       <div
-        className="grid grid-cols-4 sl:grid-cols-6 sl:h-185 h-140 p-3 border-2 border-slate-700 rounded-xl gap-x-10 items-start justify-center gap-y-5 mt-5 overflow-y-auto"
+        className="grid grid-cols-4 sl:grid-cols-6 sl:h-185 h-120 p-3 border-2 border-slate-700 rounded-xl gap-x-10 items-start justify-center gap-y-5 mt-5 overflow-y-auto"
         style={{ animation: "slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)" }}
       >
 
-        {perfilSelected && itemsPerPerfil[perfilSelected].map((item: ItemOrden, index: number) => (
+        {perfilSelected && itemsPerPerfil[perfilSelected].map((item: ItemOrden) => (
           <ItemDesglose
-            key={index}
+            key={item.id}
             itemData={item}
-            mode={"edit"} />
+            mode={mode} />
         ))}
 
       </div>

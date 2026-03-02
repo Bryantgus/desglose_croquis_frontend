@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import SetupDesglose from "../components/Desglose/SetupDesglose";
-import { useCreateItemOrden, useItemOrdenes } from "../hooks/useItemOrden";
+import { useItemOrdenes } from "../hooks/useItemOrden";
 import { useIdStore } from "../globalState/ordenId";
 import type { TIPO_PERFIL } from "../types/ItemOrden";
 import NoOrdenSelected from "../components/NoOrdenSelected";
@@ -10,16 +10,10 @@ import DesgloseContent from "../components/Desglose/DesgloseContent";
 export default function Desglose() {
   const ordenId = useIdStore((s) => s.ordenId);
   const { data, isLoading } = useItemOrdenes(Number(ordenId));
-  const addDesglose = useCreateItemOrden();
-
-  // 1. Estados de UI
   const [perfilSelected, setPerfilSelected] = useState<TIPO_PERFIL | "">("");
   const [showSetupManual, setShowSetupManual] = useState(false);
-  
-  // Este estado guardará qué perfiles decidió el usuario VER.
   const [perfilesConfigurados, setPerfilesConfigurados] = useState<TIPO_PERFIL[] | null>(null);
 
-  // 2. Agrupamos los items que vienen de la DB
   const itemsPerPerfil = useMemo(() => {
     if (!data) return null;
     return {
@@ -30,7 +24,6 @@ export default function Desglose() {
     };
   }, [data]);
 
-  // 3. Calculamos qué perfiles tienen datos REALES en la DB
   const perfilesConDataEnDB = useMemo(() => {
     if (!itemsPerPerfil) return [];
     return Object.keys(itemsPerPerfil).filter(
@@ -38,8 +31,8 @@ export default function Desglose() {
     ) as TIPO_PERFIL[];
   }, [itemsPerPerfil]);
 
-  const perfilesAMostrar = perfilesConfigurados !== null 
-    ? perfilesConfigurados 
+  const perfilesAMostrar = perfilesConfigurados !== null
+    ? perfilesConfigurados
     : perfilesConDataEnDB;
 
   if (ordenId === 0) return <NoOrdenSelected />;
@@ -48,28 +41,11 @@ export default function Desglose() {
   const isSetupVisible = (perfilesAMostrar.length === 0) || showSetupManual;
 
   const handleSave = (perfilesSeleccionados: TIPO_PERFIL[]) => {
-    // Actualizamos la UI local inmediatamente
     setPerfilesConfigurados(perfilesSeleccionados);
-    
-    // Limpiamos la selección si el perfil actual ya no existe en la nueva lista
+
     if (perfilSelected && !perfilesSeleccionados.includes(perfilSelected as TIPO_PERFIL)) {
       setPerfilSelected("");
     }
-
-    // Crear en DB solo lo que no existe
-    perfilesSeleccionados.forEach((perfil) => {
-      const tieneDataEnDB = itemsPerPerfil[perfil as keyof typeof itemsPerPerfil].length > 0;
-      if (!tieneDataEnDB) {
-        addDesglose.mutate({
-          ordenId: Number(ordenId),
-          itemOrden: {
-            ancho: "1", alto: "1", etiqueta: "1", vias: 2,
-            tipoCristal: "natural liso", tipoPerfil: perfil, colorPerfil: "blanco",
-          },
-        });
-      }
-    });
-
     setShowSetupManual(false);
   };
 

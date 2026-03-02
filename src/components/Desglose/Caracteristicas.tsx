@@ -121,7 +121,7 @@ export default function Caracteristicas() {
 
         <div className="relative">
           <button
-            onClick={() => setOptionOpened('vias')}
+            onClick={() => openOptions('vias')}
             className="w-10 h-8 bg-slate-800 border border-slate-600 rounded cursor-pointer
             text-sm font-bold text-slate-200
             hover:border-blue-400 transition-colors">
@@ -129,10 +129,11 @@ export default function Caracteristicas() {
           </button>
 
           {optionOpened === 'vias' &&
-            <div className="absolute top-10 right-0 w-12 cursor-pointer
+            <div className="absolute -top-25 right-10 w-12 cursor-pointer
             bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-20 py-1">
               {[1, 2, 3, 4, 5].map((via) => (
                 <div key={via}
+                  onClick={() => setFeaturesFnc('vias', via)}
                   className="px-3 py-2 text-sm text-center text-slate-200 hover:bg-slate-700 cursor-pointer">
                   {via}
                 </div>
@@ -146,4 +147,4 @@ export default function Caracteristicas() {
   );
 }
 
-// { label: 'Azul', color: '#3b82f6' },
+  

@@ -13,7 +13,7 @@ export default function Ordenes() {
   const [mode, setMode] = useState('crear');
 
   const [showModal, setShowModal] = useState(false)
-  
+
   const stats = useMemo(() => {
     if (!data) return { pendientes: 0, enProceso: 0, completadas: 0, total: 0 };
 
@@ -25,7 +25,7 @@ export default function Ordenes() {
     };
   }, [data]);
 
-    const toggleMode = (mode: string) => {
+  const toggleMode = (mode: string) => {
     setMode(mode)
     setShowModal(true)
   }
@@ -35,6 +35,8 @@ export default function Ordenes() {
       style={{
         animation: 'slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
+
+      <h1 className="text-3xl font-bold text-white mb-1 pb-5">Ordenes de Trabajo</h1>
 
       {showModal &&
         <CrearEditarOrden
