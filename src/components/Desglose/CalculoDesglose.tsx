@@ -1,16 +1,23 @@
+import type { TIPO_PERFIL } from "../../types/ItemOrden"
+import { calcularDesgloseVentanas } from "../../utils/calculoVentana"
+
 type Props = {
-  label: string
   ancho: string
   alto: string
+  vias: number
+  perfil: TIPO_PERFIL
 }
-export default function CalculoDesglose({label, ancho, alto}: Props) {
+export default function CalculoDesglose({ ancho, alto, vias, perfil }: Props) {
+  const { rc, lateral, jamba, ruleta, can, cal } =
+    calcularDesgloseVentanas(ancho, alto, vias, perfil as "p65" | "tradicional" | "p92")
+
   const items = [
-    { label: 'RC', value: '1200' },
-    { label: 'Lateral', value: '2400' },
-    { label: 'Jamba', value: '1500' },
-    { label: 'Ruleta', value: '4' },
-    { label: 'Can', value: '2' },
-    { label: 'Cal', value: '1.5' }
+    { label: 'RC', value: rc },
+    { label: 'Lateral', value: lateral },
+    { label: 'Jamba', value: jamba },
+    { label: 'Ruleta', value: ruleta },
+    { label: 'Can', value: can },
+    { label: 'Cal', value: cal }
   ];
 
   return (
@@ -27,7 +34,7 @@ export default function CalculoDesglose({label, ancho, alto}: Props) {
             </span>
           </div>
 
-          <div className="w-16 h-6 flex items-center justify-center bg-blue-500/10 rounded border border-blue-500/30">
+          <div className="w-20 h-6 flex items-center justify-center bg-blue-500/10 rounded border border-blue-500/30">
             <span className="text-[18px] text-blue-400">
               {item.value}
             </span>

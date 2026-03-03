@@ -25,3 +25,17 @@ export type ItemOrden = {
     etiqueta: string
 }
 
+export type Desglose = {
+    rc: string
+    lateral: string
+    jamba: string
+    ruleta: (string | number)[]
+    can: string
+    cal: string
+}
+
+export type Features = {
+    colorPerfil: COLORES_PERFIL,
+    tipoCristal: TIPO_CRISTAL,
+    vias: number
+}

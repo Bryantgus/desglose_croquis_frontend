@@ -1,4 +1,4 @@
-import type { TIPO_PERFIL } from "../types/ItemOrden";
+import type { Desglose } from "../types/ItemOrden";
 
 const mixtoToDecimal = (valorMixto: string): number => {
   if (!valorMixto) return 0;
@@ -52,59 +52,118 @@ const decimalToMixto = (decimal: number): string => {
   return `${entero} ${numSimplificado}/${denSimplificado}`;
 };
 
-const p65: Record<string, string> = {
-  rc: '1 3/8',
-  lateral: '1/8',
-  jamba: '2 1/8',
-  ruleta: "1 1/8",
-  can: "6 1/2",
-  cal: "5"
+const p65: Record<string, Desglose> = {
+  2: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8", 1],
+    can: "6 1/2",
+    cal: "5"
+  },
+  3: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["3/8", -1],
+    can: "7 3/8",
+    cal: "5"
+  }
 }
 
-const tradicional: Record<string, string> = {
-  rc: '1/8',
-  lateral: '1/2',
-  jamba: "1",
-  ruleta: '1/2',
-  can: '4',
-  cal: '4',
+const tradicional: Record<string, Desglose> = {
+  2: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8", 1],
+    can: "6 1/2",
+    cal: "5"
+  },
+  3: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8",],
+    can: "6 1/2",
+    cal: "5"
+  }
 }
 
-const p92: Record<string, string> = {
-  rc: '1 5/8',
-  lateral: '1/8',
-  jamba: '2 1/2',
-  ruleta: '1',
-  can: '7 3/4',
-  cal: '6 1/2'
+const p92: Record<string, Desglose> = {
+  2: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8", 1],
+    can: "6 1/2",
+    cal: "5"
+  },
+  3: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8", 1],
+    can: "6 1/2",
+    cal: "5"
+  },
+  4: {
+    rc: '1 3/8',
+    lateral: '1/8',
+    jamba: '2 1/8',
+    ruleta: ["1 1/8", 1],
+    can: "6 1/2",
+    cal: "5"
+  }
+}
+
+const p40: Record<string, string> = {
+  can: '1',
+  alto: '1'
 }
 
 const medidasPerPefil = {
   p65,
   tradicional,
-  p92
+  p92,
+  p40
 }
 
-export const calcularDesglose = (ancho: string, alto: string, vias: string, perfil: TIPO_PERFIL) => {
+export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: number, perfil: "p65" | 'tradicional' | 'p92') => {
 
-  const { rc, lateral, jamba, ruleta, can, cal } = medidasPerPefil[perfil]
-  const rcDecimal = mixtoToDecimal(rc)
-  const lateralDecimal = mixtoToDecimal(lateral)
-  const jambaDecimal = mixtoToDecimal(jamba)
-  const ruletaDecimal = mixtoToDecimal(ruleta)
-  const canDecimal = mixtoToDecimal(can)
-  const calDecimal = mixtoToDecimal(cal)
+  const perfilData = medidasPerPefil[perfil]
+  const medidas = perfilData[vias]
+  const { rc, lateral, jamba, ruleta, can, cal } = medidas
 
   const anchoDecimal = mixtoToDecimal(ancho)
   const altoDecimal = mixtoToDecimal(alto)
 
-  const rcResto = decimalToMixto(anchoDecimal - rcDecimal)
-  const ruletaResto = decimalToMixto(anchoDecimal - ruletaDecimal)
-  const canResto = decimalToMixto(anchoDecimal - canDecimal)
+  const rcDecimal = mixtoToDecimal(rc)
+  const lateralDecimal = mixtoToDecimal(lateral)
+  const jambaDecimal = mixtoToDecimal(jamba)
+  const ruletaValor = String(ruleta[0])
+  const ruletaDecimal = mixtoToDecimal(ruletaValor)
+  const canDecimal = mixtoToDecimal(can)
+  const calDecimal = mixtoToDecimal(cal)
 
-  const lateralResto = decimalToMixto(altoDecimal - lateralDecimal)
+
+  const rcResto = decimalToMixto(anchoDecimal - rcDecimal)
   const jambaResto = decimalToMixto(altoDecimal - jambaDecimal)
   const calResto = decimalToMixto(altoDecimal - calDecimal)
+  const lateralResto = decimalToMixto(altoDecimal - lateralDecimal)
+
+  const ruletaOperacion = ruleta[1] as number
+
+  const ruletaRaw = ruletaOperacion === 1
+    ? (anchoDecimal - ruletaDecimal) / vias
+    : (anchoDecimal + ruletaDecimal) / vias
+
+  const ruletaRedondeado = Math.round(ruletaRaw * 16) / 16
+  const ruletaResto = decimalToMixto(ruletaRedondeado)
+
+  const canRaw = (anchoDecimal - canDecimal) / vias
+  const canRedondeado = Math.round(canRaw * 16) / 16
+  const canResto = decimalToMixto(canRedondeado)
 
   const desglose = {
     rc: rcResto,

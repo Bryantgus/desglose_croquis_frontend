@@ -1,10 +1,10 @@
-import { useState } from "react";
+// ItemDesglose.tsx
+import { useEffect, useState } from "react";
 import CalculoDesglose from "./CalculoDesglose";
 import Caracteristicas from "./Caracteristicas";
 import ItemMedida from "./ItemMedida";
-import Warningsvg from "../../assets/Warningsvg";
 import Configsvg from "../../assets/Configsvg";
-import type { ItemOrden } from "../../types/ItemOrden";
+import type { ItemOrden, Features } from "../../types/ItemOrden";
 import Deletesvg from "../../assets/Deletesvg";
 import { useDeleteItemOrden } from "../../hooks/useItemOrden";
 import { useIdStore } from "../../globalState/ordenId";
@@ -14,27 +14,56 @@ type Props = {
   mode: 'edit' | 'ver';
 }
 
-export default function ItemDesglose({ itemData, mode: modeGlobal }: Props) {
+const siglasTipoCristal: Record<string, string> = {
+  "blanco": 'B',
+  "negro": "N",
+  "roble": "R",
+  "caoba": "C",
+}
+
+const siglasCristal: Record<string, string> = {
+  "natural liso": "NL",
+  "natural martillado": "NM",
+  "bronze liso": "BL",
+  "bronze martillado": "BM",
+  "azul liso": "AL",
+  "azul martillado": "AM",
+}
+
+export default function ItemDesglose({ itemData, mode }: Props) {
   const [itemDataNow, setItemDataNow] = useState<ItemOrden>(itemData);
-
-  const [modeLocal, setModeLocal] = useState<'edit' | 'ver' | null>(null);
+  const [currentMode, setCurrentMode] = useState<'edit' | 'ver'>(mode);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
   const { mutate, isPending } = useDeleteItemOrden();
   const ordenId = useIdStore(s => s.ordenId);
 
-  const modeActual = modeLocal ?? modeGlobal;
-
+  useEffect(() => {
+    setCurrentMode(mode);
+  }, [mode]);
 
   const setDataFnc = (label: string, value: string) => {
-    setItemDataNow(prev => ({ ...prev, [label]: value }));
+    if (currentMode === 'ver') return 
+    const keyMap: Record<string, keyof ItemOrden> = {
+      "Ancho": "ancho",
+      "Alto": "alto",
+    };
+
+    const key = keyMap[label] || label;
+    setItemDataNow(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleFeaturesChange = (features: Features) => {
+    setItemDataNow(prev => ({
+      ...prev,
+      colorPerfil: features.colorPerfil,
+      tipoCristal: features.tipoCristal,
+      vias: features.vias,
+    }));
   };
 
   const toggleMode = () => {
-    setModeLocal(prev => {
-      const actual = prev ?? modeGlobal;
-      return actual === 'edit' ? 'ver' : 'edit';
-    });
+    if (mode === 'edit') return
+    setCurrentMode(prev => prev === 'edit' ? 'ver' : 'edit');
   };
 
   const handleDeleteClick = () => {
@@ -95,6 +124,12 @@ export default function ItemDesglose({ itemData, mode: modeGlobal }: Props) {
     );
   }
 
+  const currentFeatures: Features = {
+    colorPerfil: itemDataNow.colorPerfil,
+    tipoCristal: itemDataNow.tipoCristal,
+    vias: itemDataNow.vias,
+  };
+
   return (
     <div className="glass-panel p-2 rounded-xl bg-slate-800/70 w-50
       border border-slate-700/50 
@@ -114,22 +149,23 @@ export default function ItemDesglose({ itemData, mode: modeGlobal }: Props) {
             value={itemDataNow.etiqueta}
             onChange={(e) => setDataFnc('etiqueta', e.target.value)}
             name='etiqueta'
+            autoComplete="off"
             type="text"
             className="text-center w-20 bg-slate-800 text-white text-sm font-medium rounded  
               border border-slate-600 focus:border-blue-500 focus:outline-none"
           />
         </div>
-
-        <div className="flex flex-col gap-1 items-center justify-center w-30">
-
-          <button
-            className="w-8 h-8 rounded-lg bg-slate-700/50 hover:bg-slate-600 cursor-pointer
-              flex items-center justify-center transition-colors"
-            onClick={toggleMode}
-          >
-            <Configsvg />
-          </button>
-        </div>
+        {mode === 'ver' &&
+          <div className="flex flex-col gap-1 items-center justify-center w-30">
+            <button
+              className="w-8 h-8 rounded-lg bg-slate-700/50 hover:bg-slate-600 cursor-pointer
+            flex items-center justify-center transition-colors"
+              onClick={toggleMode}
+            >
+              <Configsvg />
+            </button>
+          </div>
+        }
       </div>
 
       <div className="flex justify-between gap-1">
@@ -137,25 +173,38 @@ export default function ItemDesglose({ itemData, mode: modeGlobal }: Props) {
         <ItemMedida label="Alto" value={itemDataNow.alto} changeValue={setDataFnc} />
       </div>
 
-      {modeActual === 'ver' ? (
+      {currentMode === 'ver' ? (
         <CalculoDesglose
-          label={itemDataNow.etiqueta}
           ancho={itemDataNow.ancho}
           alto={itemDataNow.alto}
+          vias={itemDataNow.vias}
+          perfil={itemDataNow.tipoPerfil}
         />
       ) : (
-        <Caracteristicas />
+        <Caracteristicas
+          featuresP={currentFeatures}
+          sendFeatures={handleFeaturesChange}
+        />
       )}
 
-      <div className="flex justify-between items-center">
-        {modeActual === 'ver' && (
+      <div className="flex justify-between items-center ml-7">
+        {currentMode === 'ver' && (
           <p className="text-center text-xs font-semibold text-blue-400">
-            Perfil:<span className="text-slate-200"> B </span> Cristal:<span className="text-slate-200"> BM </span> Via:<span className="text-slate-200"> 3 </span>
+            Perfil:<span className="text-slate-200">
+              {siglasTipoCristal[itemDataNow.colorPerfil] || '?'}
+            </span> Cristal:<span className="text-slate-200">
+              {siglasCristal[itemDataNow.tipoCristal] || '?'}
+            </span> Via:<span className="text-slate-200">
+              {itemDataNow.vias}
+            </span>
           </p>
         )}
-        <div className="cursor-pointer hover:text-red-400 transition-colors" onClick={handleDeleteClick}>
-          <Deletesvg />
-        </div>
+        {currentMode === 'edit' &&
+          <div className="flex cursor-pointer hover:text-red-400 border-2 border-slate-500 p-1 rounded-xl items-center  transition-colors gap-5 justify-center hover:bg-slate-900" onClick={handleDeleteClick}>
+            <p className="font-semibold text-red-500 text-sm">Eliminar</p>
+            <Deletesvg />
+          </div>
+        }
       </div>
     </div>
   );

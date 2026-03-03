@@ -55,16 +55,18 @@ export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, 
             ))}
           </div>
         </div>
-
-        <div className="flex items-center gap-4">
-          <InputAdd perfilSelected={perfilSelected} data={itemsPerPerfil[perfilSelected!]} />
-          <button
-            className="text-white p-2 font-semibold border-2 rounded-xl border-slate-600 hover:border-slate-500 text-[12px] cursor-pointer"
-            onClick={() => setShowSetup(true)}
-          >
-            Modificar Perfiles
-          </button>
-        </div>
+        
+        {mode === 'edit' &&
+          <div className="flex items-center gap-4">
+            <InputAdd perfilSelected={perfilSelected} data={itemsPerPerfil[perfilSelected!]} />
+            <button
+              className="text-white p-2 font-semibold border-2 rounded-xl border-slate-600 hover:border-slate-500 text-[12px] cursor-pointer"
+              onClick={() => setShowSetup(true)}
+            >
+              Modificar Perfiles
+            </button>
+          </div>
+        }
       </div>
 
       <div
