@@ -14,7 +14,7 @@ interface ItemInfo {
 const ITEM_INFO: ItemInfo[] = [
   { title: 'Ordenes', description: "Gestión de trabajos" },
   { title: 'Desglose', description: "Calculos de Perfiles y Cristales" },
-  { title: 'Croquis', description: "Empaquetado eficiente de cristales" },
+  { title: 'Croquis', description: "Empaquetado eficiente de perfiles y cristales" },
 ]
 
 export default function Sidebar() {

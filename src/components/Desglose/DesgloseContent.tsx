@@ -16,7 +16,6 @@ type Mode = "edit" | "ver"
 
 export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, perfilSelected, itemsPerPerfil, setShowSetup }: Props) {
   const [mode, setMode] = useState<Mode>('edit')
-  console.log(mode);
 
   const toggleMode = () => {
     setMode(prev => prev === 'edit' ? 'ver' : 'edit');
@@ -55,7 +54,7 @@ export default function DesgloseContent({ perfilesUsados, handlePerfilSelected, 
             ))}
           </div>
         </div>
-        
+
         {mode === 'edit' &&
           <div className="flex items-center gap-4">
             <InputAdd perfilSelected={perfilSelected} data={itemsPerPerfil[perfilSelected!]} />

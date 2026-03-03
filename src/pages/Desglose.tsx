@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import SetupDesglose from "../components/Desglose/SetupDesglose";
 import { useItemOrdenes } from "../hooks/useItemOrden";
 import { useIdStore } from "../globalState/ordenId";
-import type { TIPO_PERFIL } from "../types/ItemOrden";
+import type { TIPO_PERFIL, ItemOrden } from "../types/ItemOrden";
 import NoOrdenSelected from "../components/NoOrdenSelected";
 import SpinLoading from "../components/SpinLoading";
 import DesgloseContent from "../components/Desglose/DesgloseContent";
@@ -14,15 +14,20 @@ export default function Desglose() {
   const [showSetupManual, setShowSetupManual] = useState(false);
   const [perfilesConfigurados, setPerfilesConfigurados] = useState<TIPO_PERFIL[] | null>(null);
 
-  const itemsPerPerfil = useMemo(() => {
+  const sortedData = useMemo(() => {
     if (!data) return null;
-    return {
-      p65: data.filter((i) => i.tipoPerfil === "p65"),
-      tradicional: data.filter((i) => i.tipoPerfil === "tradicional"),
-      p92: data.filter((i) => i.tipoPerfil === "p92"),
-      p40: data.filter((i) => i.tipoPerfil === "p40"),
-    };
+    return [...data].sort((a: ItemOrden, b: ItemOrden) => a.id - b.id);
   }, [data]);
+
+  const itemsPerPerfil = useMemo(() => {
+    if (!sortedData) return null;
+    return {
+      p65: sortedData.filter((i) => i.tipoPerfil === "p65"),
+      tradicional: sortedData.filter((i) => i.tipoPerfil === "tradicional"),
+      p92: sortedData.filter((i) => i.tipoPerfil === "p92"),
+      p40: sortedData.filter((i) => i.tipoPerfil === "p40"),
+    };
+  }, [sortedData]);
 
   const perfilesConDataEnDB = useMemo(() => {
     if (!itemsPerPerfil) return [];

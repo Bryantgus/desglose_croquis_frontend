@@ -73,44 +73,44 @@ const p65: Record<string, Desglose> = {
 
 const tradicional: Record<string, Desglose> = {
   2: {
-    rc: '1 3/8',
-    lateral: '1/8',
-    jamba: '2 1/8',
-    ruleta: ["1 1/8", 1],
-    can: "6 1/2",
-    cal: "5"
+    rc: '1/8',
+    lateral: '1/2',
+    jamba: '1',
+    ruleta: ["1/2", 1],
+    can: "4",
+    cal: "4"
   },
   3: {
-    rc: '1 3/8',
-    lateral: '1/8',
-    jamba: '2 1/8',
-    ruleta: ["1 1/8",],
-    can: "6 1/2",
-    cal: "5"
+    rc: '1/8',
+    lateral: '1/2',
+    jamba: '1',
+    ruleta: ["0", 1],
+    can: "6",
+    cal: "4"
   }
 }
 
 const p92: Record<string, Desglose> = {
   2: {
-    rc: '1 3/8',
+    rc: '1 5/8',
     lateral: '1/8',
-    jamba: '2 1/8',
-    ruleta: ["1 1/8", 1],
-    can: "6 1/2",
-    cal: "5"
+    jamba: '2 1/2',
+    ruleta: ["1", 1],
+    can: "7 3/4",
+    cal: "6 1/2"
   },
   3: {
-    rc: '1 3/8',
+    rc: '1 5/8',
     lateral: '1/8',
-    jamba: '2 1/8',
+    jamba: '1 1/8',
     ruleta: ["1 1/8", 1],
     can: "6 1/2",
     cal: "5"
   },
   4: {
-    rc: '1 3/8',
+    rc: '1 5/8',
     lateral: '1/8',
-    jamba: '2 1/8',
+    jamba: '2 1/',
     ruleta: ["1 1/8", 1],
     can: "6 1/2",
     cal: "5"
@@ -139,6 +139,8 @@ export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: numb
   const altoDecimal = mixtoToDecimal(alto)
 
   const rcDecimal = mixtoToDecimal(rc)
+  console.log("aqui", rcDecimal);
+  
   const lateralDecimal = mixtoToDecimal(lateral)
   const jambaDecimal = mixtoToDecimal(jamba)
   const ruletaValor = String(ruleta[0])
@@ -164,7 +166,8 @@ export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: numb
   const canRaw = (anchoDecimal - canDecimal) / vias
   const canRedondeado = Math.round(canRaw * 16) / 16
   const canResto = decimalToMixto(canRedondeado)
-
+  console.log(canResto);
+  
   const desglose = {
     rc: rcResto,
     lateral: lateralResto,

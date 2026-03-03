@@ -7,9 +7,9 @@ interface ItemMedidaProps {
 export default function ItemMedida({ label, value, changeValue }: ItemMedidaProps) {
   return (
     <div className="flex flex-col gap-1 w-20">
-      <label id={label} className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+      <div id={label} className="text-xs font-medium text-slate-400 uppercase tracking-wide">
         {label}
-      </label>
+      </div>
       <input
         value={value}
         onChange={(e) => changeValue(label, e.target.value)}

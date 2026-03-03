@@ -134,7 +134,7 @@ export default function Caracteristicas({ sendFeatures, featuresP }: Props) {
           {optionOpened === 'vias' &&
             <div className="absolute -top-25 right-10 w-12 cursor-pointer
             bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-20 py-1">
-              {[1, 2, 3, 4, 5].map((via) => (
+              {[2, 3, 4].map((via) => (
                 <div key={via}
                   onClick={() => setFeaturesFnc('vias', via)}
                   className="px-3 py-2 text-sm text-center text-slate-200 hover:bg-slate-700 cursor-pointer">

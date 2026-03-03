@@ -23,11 +23,11 @@ export default function InputAdd({
   const ordenId = useIdStore((s) => s.ordenId);
   const [value, setValue] = useState<string>('1');
 
-const handleAdd = () => {
-  const numValue = parseInt(value, 10);
-  if (isNaN(numValue) || numValue < min || numValue > max || perfilSelected === null) {
-    return;
-  }
+  const handleAdd = () => {
+    const numValue = parseInt(value, 10);
+    if (isNaN(numValue) || numValue < min || numValue > max || perfilSelected === null) {
+      return;
+    }
 
     const itemOrdenMock: Omit<ItemOrden, 'id'> = {
       ancho: "0",
@@ -40,16 +40,10 @@ const handleAdd = () => {
     };
 
     addDesglose.mutate({
-      ordenId: Number(ordenId), 
+      ordenId: Number(ordenId),
       itemOrden: itemOrdenMock
     });
-  setValue('1');
-};
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAdd();
-    }
+    setValue('1');
   };
 
   return (
@@ -61,19 +55,6 @@ const handleAdd = () => {
       )}
 
       <div className="flex items-center gap-2">
-        <input
-          type="number"
-          min={min}
-          max={max}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-1 h-10 bg-slate-900/50 rounded-lg px-3 text-white text-2xl font-bold text-center
-            border border-slate-600
-            focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
-            transition-all placeholder:text-slate-500
-            [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        />
 
         <button
           onClick={handleAdd}

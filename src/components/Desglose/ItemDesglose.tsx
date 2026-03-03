@@ -1,13 +1,14 @@
 // ItemDesglose.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CalculoDesglose from "./CalculoDesglose";
 import Caracteristicas from "./Caracteristicas";
 import ItemMedida from "./ItemMedida";
 import Configsvg from "../../assets/Configsvg";
 import type { ItemOrden, Features } from "../../types/ItemOrden";
 import Deletesvg from "../../assets/Deletesvg";
-import { useDeleteItemOrden } from "../../hooks/useItemOrden";
+import { useDeleteItemOrden, useModifyItemOrden } from "../../hooks/useItemOrden";
 import { useIdStore } from "../../globalState/ordenId";
+import SpinLoading from "../SpinLoading";
 
 type Props = {
   itemData: ItemOrden;
@@ -34,15 +35,47 @@ export default function ItemDesglose({ itemData, mode }: Props) {
   const [itemDataNow, setItemDataNow] = useState<ItemOrden>(itemData);
   const [currentMode, setCurrentMode] = useState<'edit' | 'ver'>(mode);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { mutate, isPending } = useDeleteItemOrden();
+
+  const { mutate: deleteItem, isPending: isDeleting } = useDeleteItemOrden();
+  const { mutate: updateItem, isPending: isUpdating } = useModifyItemOrden();
+
   const ordenId = useIdStore(s => s.ordenId);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(2000);
 
   useEffect(() => {
     setCurrentMode(mode);
   }, [mode]);
 
+  useEffect(() => {
+    if (currentMode === 'ver') return;
+    if (JSON.stringify(itemDataNow) === JSON.stringify(itemData)) return;
+    if (!ordenId) return;
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(() => {
+      updateItem({
+        itemOrdenId: itemDataNow.id,
+        ordenId: ordenId,
+        itemOrden: {
+          ancho: itemDataNow.ancho,
+          alto: itemDataNow.alto,
+          etiqueta: itemDataNow.etiqueta,
+          colorPerfil: itemDataNow.colorPerfil,
+          tipoCristal: itemDataNow.tipoCristal,
+          vias: itemDataNow.vias,
+        }
+      });
+    }, 1000);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [itemDataNow, itemData, currentMode, ordenId, updateItem]);
+
   const setDataFnc = (label: string, value: string) => {
-    if (currentMode === 'ver') return 
+    if (currentMode === 'ver') return;
+
     const keyMap: Record<string, keyof ItemOrden> = {
       "Ancho": "ancho",
       "Alto": "alto",
@@ -53,6 +86,8 @@ export default function ItemDesglose({ itemData, mode }: Props) {
   };
 
   const handleFeaturesChange = (features: Features) => {
+    if (currentMode === 'ver') return;
+
     setItemDataNow(prev => ({
       ...prev,
       colorPerfil: features.colorPerfil,
@@ -62,7 +97,7 @@ export default function ItemDesglose({ itemData, mode }: Props) {
   };
 
   const toggleMode = () => {
-    if (mode === 'edit') return
+    if (mode === 'edit') return;
     setCurrentMode(prev => prev === 'edit' ? 'ver' : 'edit');
   };
 
@@ -75,8 +110,10 @@ export default function ItemDesglose({ itemData, mode }: Props) {
   };
 
   const handleConfirmDelete = () => {
-    mutate(
-      { itemOrdenId: itemDataNow.id, ordenId: ordenId! },
+    if (!ordenId) return;
+
+    deleteItem(
+      { itemOrdenId: itemDataNow.id, ordenId: ordenId },
       {
         onSuccess: () => {
           setShowDeleteConfirm(false);
@@ -102,7 +139,7 @@ export default function ItemDesglose({ itemData, mode }: Props) {
         <div className="flex gap-3 w-full">
           <button
             onClick={handleCancelDelete}
-            disabled={isPending}
+            disabled={isDeleting}
             className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 
               text-white text-sm font-medium transition-colors cursor-pointer
               disabled:opacity-50 disabled:cursor-not-allowed"
@@ -112,12 +149,12 @@ export default function ItemDesglose({ itemData, mode }: Props) {
 
           <button
             onClick={handleConfirmDelete}
-            disabled={isPending}
+            disabled={isDeleting}
             className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 
               text-white text-sm font-medium transition-colors cursor-pointer
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPending ? 'Borrando' : 'Sí'}
+            {isDeleting ? 'Borrando...' : 'Sí'}
           </button>
         </div>
       </div>
@@ -131,28 +168,31 @@ export default function ItemDesglose({ itemData, mode }: Props) {
   };
 
   return (
-    <div className="glass-panel p-2 rounded-xl bg-slate-800/70 w-50
+    <div className={`glass-panel p-2 rounded-xl bg-slate-800/70 w-50
       border border-slate-700/50 
       transition-all duration-300 ease 
       hover:-translate-y-0.5 
       hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.3)] 
       hover:border-blue-400/30 
-      flex flex-col gap-1">
+      flex flex-col gap-1
+      ${isUpdating ? 'opacity-75' : ''}`}>
+
+
 
       <div className="flex items-center justify-between">
         <div className="bg-slate-900/50 rounded-lg p-1 border border-slate-700 w-30">
-          <label htmlFor='etiqueta' className="text-xs text-slate-400 block mb-1">
+          <div className="text-xs text-slate-400 block mb-1">
             Etiqueta
-          </label>
+          </div>
           <input
-            id='etiqueta'
             value={itemDataNow.etiqueta}
             onChange={(e) => setDataFnc('etiqueta', e.target.value)}
-            name='etiqueta'
             autoComplete="off"
             type="text"
+            disabled={isUpdating}
             className="text-center w-20 bg-slate-800 text-white text-sm font-medium rounded  
-              border border-slate-600 focus:border-blue-500 focus:outline-none"
+              border border-slate-600 focus:border-blue-500 focus:outline-none
+              disabled:opacity-50"
           />
         </div>
         {mode === 'ver' &&
@@ -169,8 +209,37 @@ export default function ItemDesglose({ itemData, mode }: Props) {
       </div>
 
       <div className="flex justify-between gap-1">
-        <ItemMedida label="Ancho" value={itemDataNow.ancho} changeValue={setDataFnc} />
-        <ItemMedida label="Alto" value={itemDataNow.alto} changeValue={setDataFnc} />
+        {currentMode === 'ver' ?
+          <div className="h-8 bg-slate-900/50 rounded-lg 
+          text-white text-center font-semibold 
+          border border-slate-600 w-20 flex items-center justify-center
+          focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
+          transition-all">
+            {itemDataNow.ancho}
+          </div>
+          :
+          <ItemMedida
+            label="Ancho"
+            value={itemDataNow.ancho}
+            changeValue={setDataFnc}
+          />
+        }
+
+        {currentMode === 'ver' ?
+          <div className="h-8 bg-slate-900/50 rounded-lg 
+          text-white text-center font-semibold flex items-center justify-center
+          border border-slate-600 w-20
+          focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 focus:outline-none
+          transition-all">
+            {itemDataNow.ancho}
+          </div>
+          :
+          <ItemMedida
+            label="Alto"
+            value={itemDataNow.alto}
+            changeValue={setDataFnc}
+          />
+        }
       </div>
 
       {currentMode === 'ver' ? (
@@ -200,11 +269,20 @@ export default function ItemDesglose({ itemData, mode }: Props) {
           </p>
         )}
         {currentMode === 'edit' &&
-          <div className="flex cursor-pointer hover:text-red-400 border-2 border-slate-500 p-1 rounded-xl items-center  transition-colors gap-5 justify-center hover:bg-slate-900" onClick={handleDeleteClick}>
+          <div
+            className="flex cursor-pointer hover:text-red-400 border-2 border-slate-500 p-1 rounded-xl items-center transition-colors gap-5 justify-center hover:bg-slate-900"
+            onClick={handleDeleteClick}
+          >
             <p className="font-semibold text-red-500 text-sm">Eliminar</p>
             <Deletesvg />
           </div>
         }
+        {/* Indicador de guardando */}
+        {isUpdating && (
+          <div className="absolute top-1 right-1">
+            <SpinLoading />
+          </div>
+        )}
       </div>
     </div>
   );
