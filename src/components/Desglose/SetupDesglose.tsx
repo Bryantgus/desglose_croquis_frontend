@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import type { PerfilType } from '../../types/ItemOrden';
 import BtnDesglose from './BtnDesglose';
 
-
-
+type PerfilType = 'p65' | 'tradicional' | 'p92'
 interface PerfilOption {
   id: PerfilType;
   label: string;
@@ -14,7 +12,6 @@ const PERFILES: PerfilOption[] = [
   { id: 'p65', label: 'P65' },
   { id: 'tradicional', label: 'Tradicional', },
   { id: 'p92', label: 'P92' },
-  { id: 'p40', label: 'P40' },
 ];
 
 interface SetupProps {

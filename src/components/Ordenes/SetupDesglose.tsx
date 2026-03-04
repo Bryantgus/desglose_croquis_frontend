@@ -1,12 +1,11 @@
 import { useState } from 'react';
 
-type PerfilType = 'p65' | 'tradicional' | 'p92' | 'p40';
+type PerfilType = 'p65' | 'tradicional' | 'p92';
 
 const PERFILES: { id: PerfilType; label: string; description: string }[] = [
   { id: 'p65', label: 'P65', description: 'Perfil Básico' },
   { id: 'tradicional', label: 'Tradicional', description: 'Perfil Básico Mediano' },
   { id: 'p92', label: 'P92', description: 'Perfil Corredizo' },
-  { id: 'p40', label: 'P40', description: 'Perfil Corredizo Mediano' },
 ];
 
 interface SetupProps {

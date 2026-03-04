@@ -1,6 +1,6 @@
 import type { Desglose } from "../types/ItemOrden";
 
-const mixtoToDecimal = (valorMixto: string): number => {
+export const mixtoToDecimal = (valorMixto: string): number => {
   if (!valorMixto) return 0;
 
   const partes = valorMixto.trim().split(' ');
@@ -18,7 +18,7 @@ const mixtoToDecimal = (valorMixto: string): number => {
   return entero + fraccionDecimal;
 };
 
-const procesarFraccion = (fraccion: string): number => {
+export const procesarFraccion = (fraccion: string): number => {
   const [numerador, denominador] = fraccion.split('/');
   const num = Number(numerador);
   const den = Number(denominador);
@@ -26,7 +26,7 @@ const procesarFraccion = (fraccion: string): number => {
   return (den !== 0 && !isNaN(num) && !isNaN(den)) ? num / den : 0;
 };
 
-const decimalToMixto = (decimal: number): string => {
+export const decimalToMixto = (decimal: number): string => {
   if (decimal === 0) return "0";
 
   const entero = Math.floor(decimal);
@@ -117,16 +117,11 @@ const p92: Record<string, Desglose> = {
   }
 }
 
-const p40: Record<string, string> = {
-  can: '1',
-  alto: '1'
-}
 
 const medidasPerPefil = {
   p65,
   tradicional,
   p92,
-  p40
 }
 
 export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: number, perfil: "p65" | 'tradicional' | 'p92') => {
@@ -139,8 +134,6 @@ export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: numb
   const altoDecimal = mixtoToDecimal(alto)
 
   const rcDecimal = mixtoToDecimal(rc)
-  console.log("aqui", rcDecimal);
-  
   const lateralDecimal = mixtoToDecimal(lateral)
   const jambaDecimal = mixtoToDecimal(jamba)
   const ruletaValor = String(ruleta[0])
@@ -166,8 +159,7 @@ export const calcularDesgloseVentanas = (ancho: string, alto: string, vias: numb
   const canRaw = (anchoDecimal - canDecimal) / vias
   const canRedondeado = Math.round(canRaw * 16) / 16
   const canResto = decimalToMixto(canRedondeado)
-  console.log(canResto);
-  
+
   const desglose = {
     rc: rcResto,
     lateral: lateralResto,

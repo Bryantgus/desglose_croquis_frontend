@@ -25,7 +25,6 @@ export default function Desglose() {
       p65: sortedData.filter((i) => i.tipoPerfil === "p65"),
       tradicional: sortedData.filter((i) => i.tipoPerfil === "tradicional"),
       p92: sortedData.filter((i) => i.tipoPerfil === "p92"),
-      p40: sortedData.filter((i) => i.tipoPerfil === "p40"),
     };
   }, [sortedData]);
 
