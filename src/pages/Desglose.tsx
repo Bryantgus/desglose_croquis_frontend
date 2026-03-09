@@ -1,71 +1,60 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import SetupDesglose from "../components/Desglose/SetupDesglose";
 import { useItemOrdenes } from "../hooks/useItemOrden";
 import { useIdStore } from "../globalState/ordenId";
-import type { TIPO_PERFIL, ItemOrden } from "../types/ItemOrden";
+import type { TIPO_PERFIL } from "../types/ItemOrden";
 import NoOrdenSelected from "../components/NoOrdenSelected";
 import SpinLoading from "../components/SpinLoading";
 import DesgloseContent from "../components/Desglose/DesgloseContent";
 
 export default function Desglose() {
   const ordenId = useIdStore((s) => s.ordenId);
-  const { data, isLoading } = useItemOrdenes(Number(ordenId));
-  const [perfilSelected, setPerfilSelected] = useState<TIPO_PERFIL | "">("");
   const [showSetupManual, setShowSetupManual] = useState(false);
-  const [perfilesConfigurados, setPerfilesConfigurados] = useState<TIPO_PERFIL[] | null>(null);
-
-  const sortedData = useMemo(() => {
-    if (!data) return null;
-    return [...data].sort((a: ItemOrden, b: ItemOrden) => a.id - b.id);
-  }, [data]);
-
-  const itemsPerPerfil = useMemo(() => {
-    if (!sortedData) return null;
-    return {
-      p65: sortedData.filter((i) => i.tipoPerfil === "p65"),
-      tradicional: sortedData.filter((i) => i.tipoPerfil === "tradicional"),
-      p92: sortedData.filter((i) => i.tipoPerfil === "p92"),
-    };
-  }, [sortedData]);
-
-  const perfilesConDataEnDB = useMemo(() => {
+  const { data: itemsPerPerfil, isLoading } = useItemOrdenes(Number(ordenId));
+  const perfilesDisponibles: TIPO_PERFIL[] = useMemo(() => {
     if (!itemsPerPerfil) return [];
     return Object.keys(itemsPerPerfil).filter(
       (perfil) => itemsPerPerfil[perfil as keyof typeof itemsPerPerfil].length > 0
     ) as TIPO_PERFIL[];
   }, [itemsPerPerfil]);
 
-  const perfilesAMostrar = perfilesConfigurados !== null
-    ? perfilesConfigurados
-    : perfilesConDataEnDB;
+  const [perfilSelected, setPerfilSelected] = useState<TIPO_PERFIL | null>(null);
 
-  if (ordenId === 0) return <NoOrdenSelected />;
-  if (isLoading || itemsPerPerfil === null) return <SpinLoading />;
 
-  const isSetupVisible = (perfilesAMostrar.length === 0) || showSetupManual;
+  const [perfilesConfigurados, setPerfilesConfigurados] = useState<TIPO_PERFIL[]>([]);
+  const mostrarSetup = (perfilesConfigurados.length === 0) || showSetupManual;
+
+  useEffect(() => {
+    if (perfilesDisponibles.length > 0 && perfilesConfigurados.length === 0) {
+      setPerfilSelected(perfilesDisponibles[0]);
+      setPerfilesConfigurados(perfilesDisponibles);
+    }
+  }, [perfilesDisponibles]);
 
   const handleSave = (perfilesSeleccionados: TIPO_PERFIL[]) => {
     setPerfilesConfigurados(perfilesSeleccionados);
 
     if (perfilSelected && !perfilesSeleccionados.includes(perfilSelected as TIPO_PERFIL)) {
-      setPerfilSelected("");
+      setPerfilSelected(null);
     }
     setShowSetupManual(false);
   };
 
+  if (ordenId === 0) return <NoOrdenSelected />;
+  if (isLoading) return <SpinLoading />;
+
   return (
     <div style={{ animation: "slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-      {isSetupVisible ? (
+      {mostrarSetup ? (
         <SetupDesglose
-          perfilesSelected={perfilesAMostrar}
+          perfilesSelected={perfilesConfigurados}
           onSave={handleSave}
         />
       ) : (
         <DesgloseContent
-          perfilSelected={perfilSelected || perfilesAMostrar[0]}
-          perfilesUsados={perfilesAMostrar}
+          perfilSelected={perfilSelected}
+          perfilesConfigurados={perfilesConfigurados}
           handlePerfilSelected={(p) => setPerfilSelected(p)}
-          itemsPerPerfil={itemsPerPerfil}
           setShowSetup={setShowSetupManual}
         />
       )}

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useCreateItemOrden } from '../../hooks/useItemOrden';
 import { useIdStore } from '../../globalState/ordenId';
 import type { ItemOrden, TIPO_PERFIL } from '../../types/ItemOrden';
+import { useQuery } from "@tanstack/react-query";
+import { itemOrdenService } from '../../services/itemOrdenService';
+import SpinLoading from '../SpinLoading';
 
 interface InputAddProps {
   placeholder?: string;
@@ -9,7 +12,7 @@ interface InputAddProps {
   max?: number;
   min?: number;
   perfilSelected: TIPO_PERFIL | null
-  data: ItemOrden[]
+  scrollToBottom: () => void
 }
 
 export default function InputAdd({
@@ -17,13 +20,20 @@ export default function InputAdd({
   min = 1,
   max = 50,
   perfilSelected,
-  data
+  scrollToBottom
 }: InputAddProps) {
-  const addDesglose = useCreateItemOrden();
+
   const ordenId = useIdStore((s) => s.ordenId);
+  const { data } = useQuery<Record<string, ItemOrden[]>>({
+    queryKey: ["items_orden", ordenId],
+    queryFn: () => itemOrdenService.getAll(Number(ordenId)),
+    enabled: !!ordenId,
+  });
+  const addDesglose = useCreateItemOrden();
   const [value, setValue] = useState<string>('1');
 
   const handleAdd = () => {
+
     const numValue = parseInt(value, 10);
     if (isNaN(numValue) || numValue < min || numValue > max || perfilSelected === null) {
       return;
@@ -32,7 +42,7 @@ export default function InputAdd({
     const itemOrdenMock: Omit<ItemOrden, 'id'> = {
       ancho: "0",
       alto: "0",
-      etiqueta: String(data.length + 1),
+      etiqueta: String(data?.[perfilSelected]?.length ? data[perfilSelected].length + 1 : 1),
       vias: 2,
       tipoCristal: "natural liso",
       tipoPerfil: perfilSelected,
@@ -44,8 +54,9 @@ export default function InputAdd({
       itemOrden: itemOrdenMock
     });
     setValue('1');
+    scrollToBottom()
   };
-
+  if (addDesglose.isPending) return <SpinLoading />
   return (
     <div className="flex flex-col gap-2">
       {label && (

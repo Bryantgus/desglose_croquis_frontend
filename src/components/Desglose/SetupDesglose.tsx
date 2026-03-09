@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import BtnDesglose from './BtnDesglose';
+import type { TIPO_PERFIL } from '../../types/ItemOrden';
 
-type PerfilType = 'p65' | 'tradicional' | 'p92'
 interface PerfilOption {
-  id: PerfilType;
+  id: TIPO_PERFIL;
   label: string;
 
 }
@@ -15,14 +15,14 @@ const PERFILES: PerfilOption[] = [
 ];
 
 interface SetupProps {
-  perfilesSelected: PerfilType[]
-  onSave: (selectedPerfiles: PerfilType[]) => void;
+  perfilesSelected: TIPO_PERFIL[]
+  onSave: (selectedPerfiles: TIPO_PERFIL[]) => void;
 }
 
 export default function SetupDesglose({ onSave, perfilesSelected }: SetupProps) {
-  const [selectedPerfiles, setSelectedPerfiles] = useState<PerfilType[]>(perfilesSelected);
+  const [selectedPerfiles, setSelectedPerfiles] = useState<TIPO_PERFIL[]>(perfilesSelected);
 
-  const togglePerfil = (perfil: PerfilType) => {
+  const togglePerfil = (perfil: TIPO_PERFIL) => {
     setSelectedPerfiles(prev =>
       prev.includes(perfil)
         ? prev.filter(p => p !== perfil)
@@ -36,7 +36,7 @@ export default function SetupDesglose({ onSave, perfilesSelected }: SetupProps) 
     }
   };
 
-  const isSelected = (perfil: PerfilType) => selectedPerfiles.includes(perfil);
+  const isSelected = (perfil: TIPO_PERFIL) => selectedPerfiles.includes(perfil);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">

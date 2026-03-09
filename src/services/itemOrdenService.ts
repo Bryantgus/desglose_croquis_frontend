@@ -8,7 +8,7 @@ export const itemOrdenService = {
     return data;
   },
 
-  getAll: async (ordenId: number): Promise<ItemOrden[]> => {
+  getAll: async (ordenId: number): Promise<Record<string, ItemOrden[]>> => {
     const { data } = await api.get(`/item_orden/${ordenId}`);
     return data
   },
