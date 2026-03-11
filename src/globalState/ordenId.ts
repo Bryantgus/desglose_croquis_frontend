@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 
 export interface ordenIdState { // Exporta la interfaz
-  ordenId: number | null;
+  ordenId: number;
   setId: (id: number) => void;
   clearId: () => void;
 }
@@ -10,5 +10,5 @@ export interface ordenIdState { // Exporta la interfaz
 export const useIdStore = create<ordenIdState>((set) => ({
   ordenId: 0,
   setId: (ordenId) => set({ ordenId }),
-  clearId: () => set({ ordenId: null }),
+  clearId: () => set({ ordenId: 0 }),
 }));

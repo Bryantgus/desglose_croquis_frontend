@@ -1,6 +1,8 @@
 import Croquissvg from "../../assets/Croquissvg"
 import Desglosesvg from "../../assets/Desglosesvg"
 import Ordenessvg from "../../assets/Ordenessvg"
+import { useIdStore } from "../../globalState/ordenId";
+import { useToastStore } from "../../globalState/toast";
 
 const ICON_MAP = {
   ordenes: Ordenessvg,
@@ -12,7 +14,7 @@ const ICON_MAP = {
 interface ItemProps {
   title: string;
   description: string;
-  icon: keyof typeof ICON_MAP; 
+  icon: keyof typeof ICON_MAP;
   setActive: (module: string) => void
   isActive: boolean;
 }
@@ -20,17 +22,27 @@ interface ItemProps {
 export default function Item({ title, description, icon, setActive, isActive }: ItemProps) {
 
   const IconComponent = ICON_MAP[icon];
+  const ordenId = useIdStore((s) => s.ordenId);
+  const openToast = useToastStore(s => s.openToast)
+
+  const setActiveFnc = () => {
+    if (ordenId === 0 || title !== "Ordenes") {
+      openToast('Ninguna Orden Seleccionada para vizualizar ' + title.toLowerCase(), 'info')
+      return
+    }
+    setActive(title.toLowerCase())
+  }
 
   return (
-    <button onClick={() => setActive(title.toLowerCase())}
-      className={`${isActive && 'active'} cursor-pointer w-full flex items-center gap-3 px-1 py-3 rounded-xl text-left transition-all group 
-        ${isActive ? 'bg-[#3b82f626] text-[#60a5fa]' : 'hover:bg-slate-800/50'}`}
+    <button onClick={setActiveFnc}
+      className={`${isActive && 'active'} ${ordenId === 0 && title !== 'Ordenes' ? 'cursor-not-allowed' : 'cursor-pointer'} w-full flex items-center gap-3 px-1 py-3 rounded-xl text-left transition-all group 
+        ${isActive && ordenId > 1 ? 'bg-[#3b82f626] text-[#60a5fa]' : 'hover:bg-slate-800/50'}`}
     >
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors 
-        ${isActive ? 'bg-blue-500/20 text-blue-400' : ''}`}>
-        
+        ${isActive && ordenId ? 'bg-blue-500/20 text-blue-400' : ''}`}>
+
         {IconComponent ? <IconComponent /> : null}
-        
+
       </div>
 
       <div className="flex-1">

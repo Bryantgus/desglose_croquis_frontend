@@ -5,6 +5,7 @@ import type { ItemOrden, TIPO_PERFIL } from '../../types/ItemOrden';
 import { useQuery } from "@tanstack/react-query";
 import { itemOrdenService } from '../../services/itemOrdenService';
 import SpinLoading from '../SpinLoading';
+import { useToastStore } from '../../globalState/toast';
 
 interface InputAddProps {
   placeholder?: string;
@@ -22,7 +23,7 @@ export default function InputAdd({
   perfilSelected,
   scrollToBottom
 }: InputAddProps) {
-
+  const openToast = useToastStore(s => s.openToast)
   const ordenId = useIdStore((s) => s.ordenId);
   const { data } = useQuery<Record<string, ItemOrden[]>>({
     queryKey: ["items_orden", ordenId],
@@ -52,7 +53,12 @@ export default function InputAdd({
     addDesglose.mutate({
       ordenId: Number(ordenId),
       itemOrden: itemOrdenMock
-    });
+    },
+      {
+        onSuccess: () => {
+          openToast("Desglose agregado correctamente", 'success')
+        }
+      });
     setValue('1');
     scrollToBottom()
   };

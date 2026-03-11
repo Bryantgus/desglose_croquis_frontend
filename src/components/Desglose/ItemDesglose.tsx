@@ -96,7 +96,7 @@ export default function ItemDesglose({ itemData, mode }: Props) {
       {
         onSuccess: () => {
           setShowDeleteConfirm(false)
-          openToast("Desglose eliminado", 'success')
+          openToast("Desglose eliminado", 'info')
         }
       }
 

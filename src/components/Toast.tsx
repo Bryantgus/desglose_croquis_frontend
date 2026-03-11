@@ -75,7 +75,7 @@ export default function Toast({ onClose }: ToastProps) {
         {TYPE_ICONS[type]}
       </div>
 
-      <p className="flex-1 text-sm font-medium">
+      <p className="flex-1 text-[13px] font-medium">
         {message}
       </p>
 
